@@ -1,6 +1,4 @@
 import type { QuranicWord } from "./WordCard";
-import WordCard from "./WordCard";
-
 import { motion } from "framer-motion";
 import { IconOnly } from "./icon";
 
