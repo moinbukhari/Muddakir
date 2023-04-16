@@ -28,10 +28,8 @@ export default function WordSidebar({
       >
         <IconOnly type="incorrect" />
       </button>
-      <div className="flex items-center justify-center rounded-lg border border-slate-500 bg-slate-300 py-8 font-noton text-[10rem] font-bold leading-none shadow-lg">
-        <div className="flex justify-center items-center  ">
-          <div className="mt-4">{word.arabic}</div>
-        </div>
+      <div className="flex items-center justify-center rounded-lg border border-slate-500 bg-slate-300 py-10 font-noton text-[8rem] font-medium shadow-lg">
+        <div className="mt-4">{word.arabic}</div>
       </div>
       <h2 className="text-center text-xl font-bold">{word.transliteration}</h2>
       <h3 className="relative text-center font-manrope text-lg">
