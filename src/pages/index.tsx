@@ -119,11 +119,11 @@ const Home: NextPage = () => {
                   </span>
                 </Link>
               </div>
-              <button
+              {/* <button
                 className="w-32 rounded border border-yellow-500 bg-transparent px-4 py-2 text-xs font-semibold text-yellow-700 hover:border-transparent hover:bg-yellow-500 hover:text-white sm:w-max sm:text-base"
               >
                 Buy me a Protein Shake 🥤
-              </button>
+              </button> */}
             </nav>
           </div>
         </div>
