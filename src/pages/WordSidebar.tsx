@@ -1,6 +1,6 @@
 import type { QuranicWord } from "./WordCard";
 import { motion } from "framer-motion";
-import { IconOnly } from "./icon";
+import IconOnly from "./icon";
 
 export default function WordSidebar({
   word,
