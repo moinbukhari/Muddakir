@@ -48,7 +48,7 @@ const manrope = Manrope({
 
 const MyApp: AppType = ({ Component, pageProps }) => {
   return (
-  <main className={`${amiri.variable} ${noto_s.variable} ${noto_n.variable} ${mirza.variable} ${manrope.variable} font-sans`}>
+  <main className={`${amiri.variable} ${noto_s.variable} ${noto_n.variable} ${mirza.variable} ${manrope.variable}`}>
     <Component {...pageProps} />
   </main>
   

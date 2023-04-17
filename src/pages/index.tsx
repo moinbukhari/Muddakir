@@ -161,7 +161,7 @@ const Home: NextPage = () => {
           </div>
         )}
 
-        <div className="mr-7 mt-10 flex w-full flex-col items-center justify-center gap-20 md:flex-row">
+        <div className="pr-10 mt-10 flex w-full flex-col items-center justify-center gap-20 md:gap-10 md:flex-row">
           <motion.div
             layout
             className="item-center flex max-w-screen-md flex-wrap items-center justify-center px-10"

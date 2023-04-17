@@ -37,7 +37,7 @@ const WordCard = ({
     //   </div>
     <li>
       <button
-        className="bg-slate-200 border-slate-400 hover:border-slate-600 hover:from-slate-500 hover:to-slate-300 focus-visible:border-slate-800  flex h-32 w-32 items-center justify-center overflow-hidden rounded-md border text-5xl font-medium hover:bg-gradient-to-b focus:outline-none focus-visible:border-2"
+        className="bg-slate-200 border-slate-400 hover:border-slate-600 hover:from-slate-500 hover:to-slate-300 focus-visible:border-slate-800  flex h-28 w-28 items-center justify-center overflow-hidden rounded-md border text-4xl font-medium hover:bg-gradient-to-b focus:outline-none focus-visible:border-2"
         {...props}
         >
         <motion.span

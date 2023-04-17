@@ -24,14 +24,15 @@ export default {
         gray11: "hsl(0, 0%, 62.8%)",
         gray12: "hsl(0, 0%, 93.0%)",
       },
+      fontFamily: {
+        amr: ['var(--font-amiri)'],
+        notos: ['var(--font-noto-s)'],
+        noton: ['var(--font-noto-n)'],
+        mirza: ['var(--font-mirza)'],
+        manrope: ['var(--font-manrope)'],
+      },
     },
-    fontFamily: {
-      amr: ['var(--font-amiri)'],
-      notos: ['var(--font-noto-s)'],
-      noton: ['var(--font-noto-n)'],
-      mirza: ['var(--font-mirza)'],
-      manrope: ['var(--font-manrope)'],
-    },
+    
   },
   plugins: [],
 } satisfies Config;
