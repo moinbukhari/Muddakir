@@ -180,7 +180,7 @@ const Home: NextPage = () => {
               />
             </div>
 
-            <div className="flex h-64 w-64 items-center justify-center rounded border px-8 py-10 bg-slate-300 border-slate-500">
+            <div className="flex h-64 w-64 items-center justify-center rounded border border-slate-500 bg-slate-300 px-8 py-10">
               <div className="relative mt-1 flex h-full w-full items-center overflow-hidden text-center font-noton text-7xl ">
                 <AnimatePresence mode="popLayout">
                   <motion.div
@@ -205,18 +205,25 @@ const Home: NextPage = () => {
 
         {!quiz && (
           <div className="mt-10 flex flex-col items-center justify-center gap-20 pr-10 md:flex-row md:gap-10">
+            {/* {!activeWord && (
+              <AnimatePresence mode="popLayout">
+                <motion.div
+                  layout
+                  className="item-center flex max-w-screen-md flex-wrap items-center justify-center px-10"
+                >
+                  <WordList list={quranicWords} onWordSelect={setActiveWord} />
+                </motion.div>
+              </AnimatePresence>
+            )} */}
             <AnimatePresence mode="popLayout">
-              <motion.div
-                initial={{ x: 300 }}
-                animate={{ x: 0 }}
-                exit={{ x: -300 }}
-                transition={{ duration: 0.5 }}
-                className="item-center flex max-w-screen-md flex-wrap items-center justify-center px-10"
-              >
-                <WordList list={quranicWords} onWordSelect={setActiveWord} />
-                {/* <div className="h-24" /> */}
-              </motion.div>
+                <motion.div
+                  layout
+                  className="item-center flex max-w-screen-md flex-wrap items-center justify-center px-10"
+                >
+                  <WordList list={quranicWords} onWordSelect={setActiveWord} />
+                </motion.div>
             </AnimatePresence>
+
             <AnimatePresence mode="popLayout">
               {activeWord && (
                 <WordSidebar
