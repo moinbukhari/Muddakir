@@ -2,9 +2,9 @@ import { type NextPage } from "next";
 import { useState, useEffect } from "react";
 import Head from "next/head";
 import { motion, AnimatePresence } from "framer-motion";
-import type { QuranicWord } from "./WordCard";
-import WordList from "./WordList";
-import WordSidebar from "./WordSidebar";
+import type { QuranicWord } from "../components/WordCard";
+import WordList from "../components/WordList";
+import WordSidebar from "../components/WordSidebar";
 import Link from "next/link";
 
 const quranicWords = [
