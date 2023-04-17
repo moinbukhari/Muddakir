@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 type Type = "correct" | "incorrect" | "skipped";
 
-export const IconOnly = ({
+const IconOnly = ({
   type,
   size = 16,
   ...props
@@ -30,3 +30,5 @@ export const IconOnly = ({
     </svg>
   );
 };
+
+export default IconOnly;
