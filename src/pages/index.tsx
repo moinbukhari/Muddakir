@@ -76,7 +76,7 @@ const Home: NextPage = () => {
 
   // const [learnedWords, setLearnedWords] = useState<QuranicWord[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [quiz] = useState(false);
+  const [quiz, setQuiz] = useState(false);
 
   // const handleLearnedWord = (id: number) => {
   //   const learnedWord = quranicWords.find(
@@ -92,6 +92,10 @@ const Home: NextPage = () => {
     } else {
       setCurrentIndex(currentIndex + 1);
     }
+  };
+  const handleQuiz = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const isTrueSet = e.target.value === "true";
+    setQuiz(isTrueSet);
   };
 
   useEffect(() => {
@@ -114,7 +118,7 @@ const Home: NextPage = () => {
             >
               <div className="flex lg:min-w-0 lg:flex-1" aria-label="Global">
                 <Link href="/" className="-m-1.5 flex p-1.5 text-center ">
-                  <span className="font-manrope text-left text-3xl font-bold ">
+                  <span className="text-left font-manrope text-3xl font-bold ">
                     Muddakir
                   </span>
                 </Link>
@@ -127,10 +131,46 @@ const Home: NextPage = () => {
             </nav>
           </div>
         </div>
+        <div className="flex flex-col items-center justify-center gap-8">
+          <ul className="flex flex-wrap gap-4">
+            <label className="cursor-pointer ">
+              <input
+                type="radio"
+                name="option"
+                value="false"
+                className="peer sr-only"
+                onChange={handleQuiz}
+                checked={quiz === false}
+              />
+              <div className="w-30 max-w-xl rounded-md bg-white p-5 text-gray-700 ring-2 ring-gray-200 hover:shadow-md peer-checked:bg-rose-300 peer-checked:ring-rose-500 peer-checked:ring-offset-2">
+                <div className="flex items-center justify-between">
+                  <p className="text-sm font-semibold uppercase">Vocab</p>
+                </div>
+              </div>
+            </label>
+            <label className="cursor-pointer ">
+              <input
+                type="radio"
+                name="option"
+                value="true"
+                className="peer sr-only"
+                onChange={handleQuiz}
+                checked={quiz === true}
+              />
+              <div className="w-30 max-w-xl rounded-md bg-white p-5 text-gray-700 ring-2 ring-gray-200 hover:shadow-md peer-checked:bg-rose-300 peer-checked:ring-rose-500 peer-checked:ring-offset-2">
+                <div className="flex items-center justify-between">
+                  <p className="text-sm font-semibold uppercase text-gray-700">
+                    Quiz
+                  </p>
+                </div>
+              </div>
+            </label>
+          </ul>
+        </div>
 
         {quiz && (
-          <div className="m-2 flex flex-col items-center justify-center gap-2">
-            <div className="relative col-span-2 h-3 w-full overflow-hidden rounded-full bg-slate-300">
+          <div className="m-8 flex flex-col items-center justify-center gap-2 rounded">
+            <div className="relative col-span-2 h-3 w-64 overflow-hidden rounded-full bg-slate-300">
               <motion.div
                 className="absolute inset-0 bg-slate-800"
                 style={{ originX: "left" }}
@@ -140,7 +180,7 @@ const Home: NextPage = () => {
               />
             </div>
 
-            <div className="flex h-64 w-64 items-center justify-center rounded border px-8 py-10">
+            <div className="flex h-64 w-64 items-center justify-center rounded border px-8 py-10 bg-slate-300 border-slate-500">
               <div className="relative mt-1 flex h-full w-full items-center overflow-hidden text-center font-noton text-7xl ">
                 <AnimatePresence mode="popLayout">
                   <motion.div
@@ -148,7 +188,7 @@ const Home: NextPage = () => {
                     initial={{ x: -300 }}
                     animate={{ x: 0 }}
                     exit={{ x: 300 }}
-                    transition={{ duration: 1 }}
+                    transition={{ duration: 0.8 }}
                     className="w-full text-center"
                   >
                     {quranicWords.at(currentIndex)?.arabic}
@@ -157,27 +197,36 @@ const Home: NextPage = () => {
               </div>
             </div>
 
-            <button onClick={() => handleNext()}>Next</button>
+            <button className="btn-gray" onClick={() => handleNext()}>
+              Next
+            </button>
           </div>
         )}
 
-        <div className="pr-10 mt-10 flex w-full flex-col items-center justify-center gap-20 md:gap-10 md:flex-row">
-          <motion.div
-            layout
-            className="item-center flex max-w-screen-md flex-wrap items-center justify-center px-10"
-          >
-            <WordList list={quranicWords} onWordSelect={setActiveWord} />
-            {/* <div className="h-24" /> */}
-          </motion.div>
-          <AnimatePresence mode="popLayout">
-            {activeWord && (
-              <WordSidebar
-                word={activeWord}
-                onClose={() => setActiveWord(null)}
-              />
-            )}
-          </AnimatePresence>
-        </div>
+        {!quiz && (
+          <div className="mt-10 flex flex-col items-center justify-center gap-20 pr-10 md:flex-row md:gap-10">
+            <AnimatePresence mode="popLayout">
+              <motion.div
+                initial={{ x: 300 }}
+                animate={{ x: 0 }}
+                exit={{ x: -300 }}
+                transition={{ duration: 0.5 }}
+                className="item-center flex max-w-screen-md flex-wrap items-center justify-center px-10"
+              >
+                <WordList list={quranicWords} onWordSelect={setActiveWord} />
+                {/* <div className="h-24" /> */}
+              </motion.div>
+            </AnimatePresence>
+            <AnimatePresence mode="popLayout">
+              {activeWord && (
+                <WordSidebar
+                  word={activeWord}
+                  onClose={() => setActiveWord(null)}
+                />
+              )}
+            </AnimatePresence>
+          </div>
+        )}
       </main>
     </>
   );

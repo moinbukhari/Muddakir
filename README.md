@@ -9,4 +9,5 @@ This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3
 [x] add a navbar at top with name of app on left and vocab and quiz options on the right.
 [] switch between vocab and quiz
 [] implement quiz
+[] fix display of sidebar with mobile
 
