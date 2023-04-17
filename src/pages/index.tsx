@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import type { QuranicWord } from "./WordCard";
 import WordList from "./WordList";
 import WordSidebar from "./WordSidebar";
+import Link from "next/link";
 
 const quranicWords = [
   { id: 1, arabic: "هَذَا", transliteration: "haza", translation: "this" },
@@ -31,19 +32,19 @@ const quranicWords = [
     id: 6,
     arabic: "ٱلَّذِي",
     transliteration: "alladhī",
-    translation: "who/that (masculine)",
+    translation: "the one who (masculine)",
   },
   {
     id: 7,
     arabic: "ٱلَّتِي",
     transliteration: "allatī",
-    translation: "who/that (feminine)",
+    translation: "the one who (feminine)",
   },
   {
     id: 8,
     arabic: "ٱلَّذِينَ",
     transliteration: "alladhīna",
-    translation: "who/that (plural)",
+    translation: "those who (plural)",
   },
   { id: 9, arabic: "كُلُّ", transliteration: "kullu", translation: "every" },
   { id: 10, arabic: "لَنْ", transliteration: "lan", translation: "never" },
@@ -104,19 +105,28 @@ const Home: NextPage = () => {
         <meta name="description" content="created by Moin" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className="flex h-screen w-screen ">
-        {/* <div className="text-center text-2xl">Which Cuisine is Tastier?</div>
-        <div className="p-2" />
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-          {quranicWords.map((word) => (
-            <WordCard
-              key={word.id}
-              word={word}
-              onLearnedWord={handleLearnedWord}
-              isLearned={learnedWords.some((learned) => learned.id === word.id)}
-            />
-          ))}
-        </div> */}
+      <main className=" h-screen w-screen ">
+        <div className="mb-6 px-6 pt-6 lg:px-8">
+          <div>
+            <nav
+              className="flex h-9 items-center justify-between"
+              aria-label="Global"
+            >
+              <div className="flex lg:min-w-0 lg:flex-1" aria-label="Global">
+                <Link href="/" className="-m-1.5 flex p-1.5 text-center ">
+                  <span className="font-manrope text-left text-3xl font-bold ">
+                    Muddakir
+                  </span>
+                </Link>
+              </div>
+              <button
+                className="w-32 rounded border border-yellow-500 bg-transparent px-4 py-2 text-xs font-semibold text-yellow-700 hover:border-transparent hover:bg-yellow-500 hover:text-white sm:w-max sm:text-base"
+              >
+                Buy me a Protein Shake 🥤
+              </button>
+            </nav>
+          </div>
+        </div>
 
         {quiz && (
           <div className="m-2 flex flex-col items-center justify-center gap-2">
@@ -151,7 +161,7 @@ const Home: NextPage = () => {
           </div>
         )}
 
-        <div className="mt-10 flex w-full flex-col items-center justify-center gap-20">
+        <div className="mr-7 mt-10 flex w-full flex-col items-center justify-center gap-20 md:flex-row">
           <motion.div
             layout
             className="item-center flex max-w-screen-md flex-wrap items-center justify-center px-10"
