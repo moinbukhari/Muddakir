@@ -1,3 +1,5 @@
+"use client";
+
 import type { QuranicWord } from "./WordCard";
 import WordCard from "./WordCard";
 

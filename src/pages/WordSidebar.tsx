@@ -1,3 +1,4 @@
+"use client";
 import type { QuranicWord } from "./WordCard";
 import { motion } from "framer-motion";
 import IconOnly from "./icon";
