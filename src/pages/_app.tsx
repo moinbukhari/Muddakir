@@ -1,5 +1,13 @@
 import { type AppType } from "next/app";
-import {Amiri_Quran, Noto_Sans_Arabic, Noto_Naskh_Arabic, Mirza, Manrope} from 'next/font/google';
+import { ClerkProvider } from "@clerk/nextjs";
+import { Analytics } from "@vercel/analytics/react";
+import {
+  Amiri_Quran,
+  Noto_Sans_Arabic,
+  Noto_Naskh_Arabic,
+  Mirza,
+  Manrope,
+} from "next/font/google";
 // import localFont from 'next/font/local';
 import { api } from "~/utils/api";
 
@@ -12,48 +20,49 @@ import "~/styles/globals.css";
 // });
 
 const amiri = Amiri_Quran({
-  variable: '--font-amiri',
-  weight: '400',
+  variable: "--font-amiri",
+  weight: "400",
   subsets: ["arabic"],
-  display: 'swap'
+  display: "swap",
 });
 
 const noto_s = Noto_Sans_Arabic({
-  variable: '--font-noto-s',
-  weight: '700',
+  variable: "--font-noto-s",
+  weight: "700",
   subsets: ["arabic"],
-  display: 'swap'
+  display: "swap",
 });
 
 const noto_n = Noto_Naskh_Arabic({
-  variable: '--font-noto-n',
-  weight: '700',
+  variable: "--font-noto-n",
+  weight: "700",
   subsets: ["arabic"],
-  display: 'swap'
+  display: "swap",
 });
 
 const mirza = Mirza({
-  variable: '--font-mirza',
-  weight: '700',
+  variable: "--font-mirza",
+  weight: "700",
   subsets: ["arabic"],
-  display: 'swap'
+  display: "swap",
 });
 
 const manrope = Manrope({
-  variable: '--font-manrope',
-  subsets:["latin"],
-  display: 'swap'
+  variable: "--font-manrope",
+  subsets: ["latin"],
+  display: "swap",
 });
-
 
 const MyApp: AppType = ({ Component, pageProps }) => {
   return (
-  <main className={`${amiri.variable} ${noto_s.variable} ${noto_n.variable} ${mirza.variable} ${manrope.variable}`}>
-    <Component {...pageProps} />
-  </main>
-  
-  
-  
+    <ClerkProvider {...pageProps}>
+      <main
+        className={`${amiri.variable} ${noto_s.variable} ${noto_n.variable} ${mirza.variable} ${manrope.variable}`}
+      >
+        <Component {...pageProps} />
+        <Analytics />
+      </main>
+    </ClerkProvider>
   );
 };
 
