@@ -6,6 +6,8 @@ import type { QuranicWord } from "../components/WordCard";
 import WordList from "../components/WordList";
 import WordSidebar from "../components/WordSidebar";
 import Link from "next/link";
+import { SignInButton, SignOutButton, useUser } from "@clerk/nextjs";
+
 
 const quranicWords = [
   { id: 1, arabic: "هَذَا", transliteration: "haza", translation: "this" },
@@ -78,13 +80,7 @@ const Home: NextPage = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [quiz, setQuiz] = useState(false);
 
-  // const handleLearnedWord = (id: number) => {
-  //   const learnedWord = quranicWords.find(
-  //     (word) => word.id === id
-  //   ) as QuranicWord;
-  //   if (learnedWord)
-  //     setLearnedWords((prevWords) => [...prevWords, learnedWord]);
-  // };
+  const user = useUser();
 
   const handleNext = () => {
     if (currentIndex >= quranicWords.length - 1) {
@@ -132,6 +128,10 @@ const Home: NextPage = () => {
           </div>
         </div>
         <div className="flex flex-col items-center justify-center gap-8">
+          <div>
+            {!user.isSignedIn && <SignInButton/>}
+            {!!user.isSignedIn && <SignOutButton/>}
+          </div>
           <ul className="flex flex-wrap gap-4">
             <label className="cursor-pointer ">
               <input
