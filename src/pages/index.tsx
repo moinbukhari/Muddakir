@@ -204,7 +204,7 @@ const Home: NextPage = () => {
         )}
 
         {!quiz && (
-          <div className="mt-10 flex flex-col items-center justify-center gap-20 pr-10 md:flex-row md:gap-10">
+          <div className="mt-10 flex flex-col items-center justify-center gap-20 md:flex-row md:gap-10 md:pr-10">
             {/* {!activeWord && (
               <AnimatePresence mode="popLayout">
                 <motion.div
@@ -215,14 +215,17 @@ const Home: NextPage = () => {
                 </motion.div>
               </AnimatePresence>
             )} */}
-            <AnimatePresence mode="popLayout">
-                <motion.div
-                  layout
-                  className="item-center flex max-w-screen-md flex-wrap items-center justify-center px-10"
-                >
-                  <WordList list={quranicWords} onWordSelect={setActiveWord} />
-                </motion.div>
-            </AnimatePresence>
+            {/* <AnimatePresence mode="popLayout"> */}
+              <div
+                className={
+                  activeWord
+                    ? "item-center hidden max-w-screen-md flex-wrap items-center justify-center px-10 lg:flex"
+                    : "item-center flex max-w-screen-md flex-wrap items-center justify-center px-10"
+                }
+              >
+                <WordList list={quranicWords} onWordSelect={setActiveWord} />
+              </div>
+            {/* </AnimatePresence> */}
 
             <AnimatePresence mode="popLayout">
               {activeWord && (
