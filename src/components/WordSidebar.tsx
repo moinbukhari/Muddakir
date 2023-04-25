@@ -11,6 +11,7 @@ export default function WordSidebar({
 }) {
   return (
     <motion.div
+      layout
       key={word.id}
       animate={{
         y: 0,

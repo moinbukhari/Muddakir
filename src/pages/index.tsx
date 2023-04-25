@@ -227,7 +227,7 @@ const Home: NextPage = () => {
         )}
 
         {!quiz && (
-          <div className="mt-10 flex flex-col items-center justify-center gap-20 lg:flex-row lg:gap-10 ">
+          <div className="mt-10 flex flex-col items-center justify-center gap-20 lg:flex-row lg:gap-10 lg:mr-5">
             {/* {!activeWord && (
               <AnimatePresence mode="popLayout">
                 <motion.div
@@ -240,17 +240,17 @@ const Home: NextPage = () => {
             )} */}
             <AnimatePresence mode="popLayout">
               <motion.div
+                layout
                 key={activeWord?.id}
                 animate={{
-
                   opacity: 1,
                 }}
                 initial={{ y: 16, opacity: 0 }}
-                transition={{  type: "spring" , damping: 30 }}
+                transition={{ type: "spring", damping: 30 }}
                 className={
                   activeWord
-                    ? "item-center hidden max-w-screen-md flex-wrap items-center justify-center  lg:flex"
-                    : "item-center flex max-w-screen-md flex-wrap items-center justify-center"
+                    ? "item-center hidden max-w-screen-md lg:flex"
+                    : "item-center flex max-w-screen-md"
                 }
               >
                 <WordList list={dbWords} onWordSelect={setActiveWord} />
