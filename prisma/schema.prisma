@@ -11,8 +11,28 @@ datasource db {
   relationMode = "prisma"
 }
 
-model Example {
-    id        String   @id @default(cuid())
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+model User {
+  id        Int      @id @default(autoincrement())
+  words     Learn[]   @relation("UserWords")
+}
+
+model Word {
+  id          Int         @id @default(autoincrement())
+  arabic        String
+  translation  String
+  transliteration  String
+  learnedBy   Learn[]      @relation("UserWords")
+}
+
+// Define the join table and its columns
+model Learn {
+  id        Int      @id @default(autoincrement())
+  user      User     @relation(name: "UserWords", fields: [userId], references: [id])
+  userId    Int
+  word      Word     @relation(name: "UserWords", fields: [wordId], references: [id])
+  wordId    Int
+  learnedAt DateTime @default(now())
+  @@unique([userId, wordId])
+  @@index([userId])
+  @@index([wordId])
 }

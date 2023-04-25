@@ -6,8 +6,12 @@ import type { QuranicWord } from "../components/WordCard";
 import WordList from "../components/WordList";
 import WordSidebar from "../components/WordSidebar";
 import Link from "next/link";
-import { SignInButton, SignOutButton, useUser } from "@clerk/nextjs";
-
+import {
+  SignInButton,
+  useUser,
+  UserButton,
+} from "@clerk/nextjs";
+import { api } from "~/utils/api";
 
 const quranicWords = [
   { id: 1, arabic: "هَذَا", transliteration: "haza", translation: "this" },
@@ -82,8 +86,17 @@ const Home: NextPage = () => {
 
   const user = useUser();
 
+  const { data, isLoading } = api.learn.getAll.useQuery();
+  useEffect(() => {
+    console.log(activeWord);
+  }, [activeWord]);
+
+  if (!data || isLoading) return <div>Loading...</div>;
+
+  const dbWords = data;
+
   const handleNext = () => {
-    if (currentIndex >= quranicWords.length - 1) {
+    if (currentIndex >= dbWords.length - 1) {
       setCurrentIndex(0);
     } else {
       setCurrentIndex(currentIndex + 1);
@@ -93,10 +106,6 @@ const Home: NextPage = () => {
     const isTrueSet = e.target.value === "true";
     setQuiz(isTrueSet);
   };
-
-  useEffect(() => {
-    console.log(activeWord);
-  }, [activeWord]);
 
   return (
     <>
@@ -109,7 +118,7 @@ const Home: NextPage = () => {
         <div className="mb-6 px-6 pt-6 lg:px-8">
           <div>
             <nav
-              className="flex h-9 items-center justify-between"
+              className="flex h-9 items-center justify-between "
               aria-label="Global"
             >
               <div className="flex lg:min-w-0 lg:flex-1" aria-label="Global">
@@ -119,6 +128,28 @@ const Home: NextPage = () => {
                   </span>
                 </Link>
               </div>
+              <div>
+                {!user.isSignedIn && (
+                  <span className="border-b-4 border-slate-400  hover:border-slate-600">
+                    <SignInButton />
+                  </span>
+                )}
+                {!!user.isSignedIn && (
+                  <div className="flex flex-col items-center justify-center">
+                    <span>Hi {user.user.firstName}</span>
+                    <UserButton
+                      appearance={{
+                        elements: {
+                          userButtonAvatarBox: {
+                            width: 48,
+                            height: 48,
+                          },
+                        },
+                      }}
+                    />
+                  </div>
+                )}
+              </div>
               {/* <button
                 className="w-32 rounded border border-yellow-500 bg-transparent px-4 py-2 text-xs font-semibold text-yellow-700 hover:border-transparent hover:bg-yellow-500 hover:text-white sm:w-max sm:text-base"
               >
@@ -127,11 +158,7 @@ const Home: NextPage = () => {
             </nav>
           </div>
         </div>
-        <div className="flex flex-col items-center justify-center gap-8">
-          <div>
-            {!user.isSignedIn && <SignInButton/>}
-            {!!user.isSignedIn && <SignOutButton/>}
-          </div>
+        <div className="mt-3 flex flex-col items-center justify-center gap-8">
           <ul className="flex flex-wrap gap-4">
             <label className="cursor-pointer ">
               <input
@@ -174,7 +201,7 @@ const Home: NextPage = () => {
               <motion.div
                 className="absolute inset-0 bg-slate-800"
                 style={{ originX: "left" }}
-                animate={{ scaleX: currentIndex / quranicWords.length }}
+                animate={{ scaleX: currentIndex / dbWords.length }}
                 initial={{ scaleX: 0 }}
                 transition={{ type: "spring", bounce: 0 }}
               />
@@ -191,7 +218,7 @@ const Home: NextPage = () => {
                     transition={{ duration: 0.8 }}
                     className="w-full text-center"
                   >
-                    {quranicWords.at(currentIndex)?.arabic}
+                    {dbWords.at(currentIndex)?.arabic}
                   </motion.div>
                 </AnimatePresence>
               </div>
@@ -204,7 +231,7 @@ const Home: NextPage = () => {
         )}
 
         {!quiz && (
-          <div className="mt-10 flex flex-col items-center justify-center gap-20 md:flex-row md:gap-10 md:pr-10">
+          <div className="mt-10 flex flex-col items-center justify-center gap-20 md:flex-row md:gap-5 ">
             {/* {!activeWord && (
               <AnimatePresence mode="popLayout">
                 <motion.div
@@ -216,15 +243,15 @@ const Home: NextPage = () => {
               </AnimatePresence>
             )} */}
             {/* <AnimatePresence mode="popLayout"> */}
-              <div
-                className={
-                  activeWord
-                    ? "item-center hidden max-w-screen-md flex-wrap items-center justify-center px-10 lg:flex"
-                    : "item-center flex max-w-screen-md flex-wrap items-center justify-center px-10"
-                }
-              >
-                <WordList list={quranicWords} onWordSelect={setActiveWord} />
-              </div>
+            <div
+              className={
+                activeWord
+                  ? "item-center hidden max-w-screen-sm flex-wrap items-center justify-center lg:flex"
+                  : "item-center flex max-w-screen-md flex-wrap items-center justify-center px-10"
+              }
+            >
+              <WordList list={dbWords} onWordSelect={setActiveWord} />
+            </div>
             {/* </AnimatePresence> */}
 
             <AnimatePresence mode="popLayout">
