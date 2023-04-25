@@ -6,11 +6,7 @@ import type { QuranicWord } from "../components/WordCard";
 import WordList from "../components/WordList";
 import WordSidebar from "../components/WordSidebar";
 import Link from "next/link";
-import {
-  SignInButton,
-  useUser,
-  UserButton,
-} from "@clerk/nextjs";
+import { SignInButton, useUser, UserButton } from "@clerk/nextjs";
 import { api } from "~/utils/api";
 
 const quranicWords = [
@@ -231,7 +227,7 @@ const Home: NextPage = () => {
         )}
 
         {!quiz && (
-          <div className="mt-10 flex flex-col items-center justify-center gap-20 md:flex-row md:gap-5 ">
+          <div className="mt-10 flex flex-col items-center justify-center gap-20 lg:flex-row lg:gap-10 ">
             {/* {!activeWord && (
               <AnimatePresence mode="popLayout">
                 <motion.div
@@ -242,17 +238,24 @@ const Home: NextPage = () => {
                 </motion.div>
               </AnimatePresence>
             )} */}
-            {/* <AnimatePresence mode="popLayout"> */}
-            <div
-              className={
-                activeWord
-                  ? "item-center hidden max-w-screen-sm flex-wrap items-center justify-center lg:flex"
-                  : "item-center flex max-w-screen-md flex-wrap items-center justify-center px-10"
-              }
-            >
-              <WordList list={dbWords} onWordSelect={setActiveWord} />
-            </div>
-            {/* </AnimatePresence> */}
+            <AnimatePresence mode="popLayout">
+              <motion.div
+                key={activeWord?.id}
+                animate={{
+
+                  opacity: 1,
+                }}
+                initial={{ y: 16, opacity: 0 }}
+                transition={{  type: "spring" , damping: 30 }}
+                className={
+                  activeWord
+                    ? "item-center hidden max-w-screen-md flex-wrap items-center justify-center  lg:flex"
+                    : "item-center flex max-w-screen-md flex-wrap items-center justify-center"
+                }
+              >
+                <WordList list={dbWords} onWordSelect={setActiveWord} />
+              </motion.div>
+            </AnimatePresence>
 
             <AnimatePresence mode="popLayout">
               {activeWord && (
