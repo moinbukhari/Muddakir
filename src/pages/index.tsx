@@ -70,7 +70,7 @@ const Home: NextPage = () => {
                 )}
                 {!!user.isSignedIn && (
                   <div className="flex flex-col items-center justify-center">
-                    <span>Hi {user.user.firstName}</span>
+                    <span className="font-manrope font-semibold">Hi {user.user.firstName}</span>
                     <UserButton
                       appearance={{
                         elements: {
