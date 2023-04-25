@@ -1,5 +1,5 @@
 import { type NextPage } from "next";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Head from "next/head";
 import { motion, AnimatePresence } from "framer-motion";
 import type { QuranicWord } from "../components/WordCard";
@@ -8,86 +8,24 @@ import WordSidebar from "../components/WordSidebar";
 import Link from "next/link";
 import { SignInButton, useUser, UserButton } from "@clerk/nextjs";
 import { api } from "~/utils/api";
-
-const quranicWords = [
-  { id: 1, arabic: "هَذَا", transliteration: "haza", translation: "this" },
-  { id: 2, arabic: "ذَٰلِكَ", transliteration: "dhalika", translation: "that" },
-  {
-    id: 3,
-    arabic: "هَذِهِ",
-    transliteration: "hadhihi",
-    translation: "this (feminine)",
-  },
-  {
-    id: 4,
-    arabic: "تِلْكَ",
-    transliteration: "tilka",
-    translation: "that (feminine)",
-  },
-  {
-    id: 5,
-    arabic: "أُولَٰئِكَ",
-    transliteration: "ulā'ika",
-    translation: "those",
-  },
-  {
-    id: 6,
-    arabic: "ٱلَّذِي",
-    transliteration: "alladhī",
-    translation: "the one who (masculine)",
-  },
-  {
-    id: 7,
-    arabic: "ٱلَّتِي",
-    transliteration: "allatī",
-    translation: "the one who (feminine)",
-  },
-  {
-    id: 8,
-    arabic: "ٱلَّذِينَ",
-    transliteration: "alladhīna",
-    translation: "those who (plural)",
-  },
-  { id: 9, arabic: "كُلُّ", transliteration: "kullu", translation: "every" },
-  { id: 10, arabic: "لَنْ", transliteration: "lan", translation: "never" },
-  { id: 11, arabic: "لَمْ", transliteration: "lam", translation: "not" },
-  { id: 12, arabic: "مَا", transliteration: "mā", translation: "what" },
-  { id: 13, arabic: "لَيْسَ", transliteration: "laysa", translation: "not" },
-  {
-    id: 14,
-    arabic: "لَيْسَتْ",
-    transliteration: "laysat",
-    translation: "not (feminine)",
-  },
-  { id: 15, arabic: "بَلَى", transliteration: "balā", translation: "yes" },
-  { id: 16, arabic: "غَيْر", transliteration: "ghayr", translation: "except" },
-  {
-    id: 17,
-    arabic: "دُونَ",
-    transliteration: "dūna",
-    translation: "less than",
-  },
-  { id: 18, arabic: "إِلَّا", transliteration: "illā", translation: "except" },
-  { id: 19, arabic: "نَعَمْ", transliteration: "naʿam", translation: "yes" },
-];
+import { LoadingPage } from "~/components/loading";
 
 const Home: NextPage = () => {
-  // array of the 30 most common Quranic Arabic words
-
-  const [activeWord, setActiveWord] = useState<QuranicWord | null>(null);
-
-  // const [learnedWords, setLearnedWords] = useState<QuranicWord[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [quiz, setQuiz] = useState(false);
 
   const user = useUser();
+  const { data, isLoading: wordsLoading } = api.learn.getAll.useQuery();
+  const [activeWord, setActiveWord] = useState<QuranicWord | null>(null);
 
-  const { data, isLoading } = api.learn.getAll.useQuery();
-  useEffect(() => {
-    console.log(activeWord);
-  }, [activeWord]);
+  if (wordsLoading)
+    return (
+      <div className="flex grow">
+        <LoadingPage />
+      </div>
+    );
 
-  if (!data || isLoading) return <div>Loading...</div>;
+  if (!data) return <div>Something went wrong</div>;
 
   const dbWords = data;
 
@@ -191,6 +129,38 @@ const Home: NextPage = () => {
           </ul>
         </div>
 
+        {!quiz && (
+          <div className="mt-10 flex flex-col items-center justify-center gap-20 lg:mr-5 lg:flex-row lg:gap-10">
+            <AnimatePresence mode="popLayout">
+              <motion.div
+                layout
+                key={activeWord?.id}
+                animate={{
+                  opacity: 1,
+                }}
+                initial={{ y: 16, opacity: 0 }}
+                transition={{ type: "spring", damping: 30 }}
+                className={
+                  activeWord
+                    ? "item-center hidden max-w-screen-md lg:flex"
+                    : "item-center flex max-w-screen-md"
+                }
+              >
+                <WordList list={dbWords} onWordSelect={setActiveWord} />
+              </motion.div>
+            </AnimatePresence>
+
+            <AnimatePresence mode="popLayout">
+              {activeWord && (
+                <WordSidebar
+                  word={activeWord}
+                  onClose={() => setActiveWord(null)}
+                />
+              )}
+            </AnimatePresence>
+          </div>
+        )}
+
         {quiz && (
           <div className="m-8 flex flex-col items-center justify-center gap-2 rounded">
             <div className="relative col-span-2 h-3 w-64 overflow-hidden rounded-full bg-slate-300">
@@ -223,48 +193,6 @@ const Home: NextPage = () => {
             <button className="btn-gray" onClick={() => handleNext()}>
               Next
             </button>
-          </div>
-        )}
-
-        {!quiz && (
-          <div className="mt-10 flex flex-col items-center justify-center gap-20 lg:flex-row lg:gap-10 lg:mr-5">
-            {/* {!activeWord && (
-              <AnimatePresence mode="popLayout">
-                <motion.div
-                  layout
-                  className="item-center flex max-w-screen-md flex-wrap items-center justify-center px-10"
-                >
-                  <WordList list={quranicWords} onWordSelect={setActiveWord} />
-                </motion.div>
-              </AnimatePresence>
-            )} */}
-            <AnimatePresence mode="popLayout">
-              <motion.div
-                layout
-                key={activeWord?.id}
-                animate={{
-                  opacity: 1,
-                }}
-                initial={{ y: 16, opacity: 0 }}
-                transition={{ type: "spring", damping: 30 }}
-                className={
-                  activeWord
-                    ? "item-center hidden max-w-screen-md lg:flex"
-                    : "item-center flex max-w-screen-md"
-                }
-              >
-                <WordList list={dbWords} onWordSelect={setActiveWord} />
-              </motion.div>
-            </AnimatePresence>
-
-            <AnimatePresence mode="popLayout">
-              {activeWord && (
-                <WordSidebar
-                  word={activeWord}
-                  onClose={() => setActiveWord(null)}
-                />
-              )}
-            </AnimatePresence>
           </div>
         )}
       </main>
