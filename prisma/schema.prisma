@@ -12,7 +12,7 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
+  id        String   @id @default(cuid())
   words     Learn[]   @relation("UserWords")
 }
 
@@ -28,7 +28,7 @@ model Word {
 model Learn {
   id        Int      @id @default(autoincrement())
   user      User     @relation(name: "UserWords", fields: [userId], references: [id])
-  userId    Int
+  userId    String
   word      Word     @relation(name: "UserWords", fields: [wordId], references: [id])
   wordId    Int
   learnedAt DateTime @default(now())

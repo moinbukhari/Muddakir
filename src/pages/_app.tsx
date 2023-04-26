@@ -1,4 +1,5 @@
 import { type AppType } from "next/app";
+import Head from "next/head";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Analytics } from "@vercel/analytics/react";
 import {
@@ -56,6 +57,12 @@ const manrope = Manrope({
 const MyApp: AppType = ({ Component, pageProps }) => {
   return (
     <ClerkProvider {...pageProps}>
+      <Head>
+        <title>Muddakir</title>
+        <meta name="description" content="created by Moin" />
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
+
       <main
         className={`${amiri.variable} ${noto_s.variable} ${noto_n.variable} ${mirza.variable} ${manrope.variable}`}
       >
