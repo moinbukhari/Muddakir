@@ -11,6 +11,7 @@ import {
 } from "next/font/google";
 // import localFont from 'next/font/local';
 import { api } from "~/utils/api";
+import { Toaster } from "react-hot-toast";
 
 import "~/styles/globals.css";
 
@@ -66,6 +67,7 @@ const MyApp: AppType = ({ Component, pageProps }) => {
       <main
         className={`${amiri.variable} ${noto_s.variable} ${noto_n.variable} ${mirza.variable} ${manrope.variable}`}
       >
+        <Toaster />
         <Component {...pageProps} />
         <Analytics />
       </main>
