@@ -1,11 +1,20 @@
 import { z } from "zod";
-
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 
 export const learnRouter = createTRPCRouter({
   learn: publicProcedure
     .input(z.object({ wordLearntId: z.number(), learntById: z.string() }))
     .mutation(async ({ ctx, input }) => {
+      const userExists = await ctx.prisma.user.findUnique({
+        where: { id: input.learntById },
+      });
+      console.log(userExists);
+      if (!userExists) {
+        console.log("User didn't exist in database");
+        await ctx.prisma.user.create({
+          data: { id: input.learntById },
+        });
+      }
       const voteInDb = await ctx.prisma.learn.create({
         data: {
           wordId: input.wordLearntId,
@@ -16,19 +25,18 @@ export const learnRouter = createTRPCRouter({
       return { success: true, vote: voteInDb };
     }),
 
-  hasUserLearnt: publicProcedure
-    .input(z.object({ wordId: z.number(), userId: z.string() }))
+  userWords: publicProcedure
+    .input(z.object({ userId: z.string() }))
     .query(async ({ ctx, input }) => {
-      const wordLearned = await ctx.prisma.learn.findFirst({
-        where: { user: { id: input.userId }, word: { id: input.wordId } },
-        include: { user: true, word: true },
+      if(input.userId === ""){
+        return undefined;
+      }
+      const wordsLearned = await ctx.prisma.user.findUnique({
+        where: { id: input.userId },
+        include: { words: { include: { word: true } } }
       });
 
-      if(wordLearned){
-        return true;
-      }
-      
-      return false
+      return wordsLearned?.words.map((learn) => learn.word);
     }),
 
   getAll: publicProcedure.query(({ ctx }) => {

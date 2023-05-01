@@ -3,9 +3,11 @@ import WordCard from "./WordCard";
 
 export default function WordList({
     list,
+    learntList,
     onWordSelect,
   }: {
     list: QuranicWord[];
+    learntList: QuranicWord[] | undefined;
     onWordSelect: (word: QuranicWord) => void;
   }) {
     
@@ -16,6 +18,7 @@ export default function WordList({
                 <WordCard
               key={word.id}
               word={word}
+              learntList= {learntList}
               onClick={() => onWordSelect(word)}
             />
               );

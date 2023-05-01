@@ -7,20 +7,35 @@ export interface QuranicWord {
   translation: string;
 }
 
-
+function isWordInList(id: number, wordList: QuranicWord[] | undefined): boolean {
+  if(id && wordList ){
+    for (let i = 0; i < wordList.length; i++) {
+      if (wordList[i]?.id === id) {
+        return true
+      }
+    }
+  }
+  
+  return false
+}
 
 const WordCard = ({
     word,
-
+    learntList,
     ...props
   }: {
     word: QuranicWord;
+    learntList: QuranicWord[] | undefined,
   } & Omit<React.ComponentPropsWithoutRef<"button">, "href">) => {
 
   return (
     <li>
       <button
-        className="bg-slate-200 border-slate-400 hover:border-slate-600 hover:from-slate-500 hover:to-slate-300 focus-visible:border-slate-800  flex h-28 w-28 items-center justify-center overflow-hidden rounded-md border text-4xl font-medium hover:bg-gradient-to-b focus:outline-none focus-visible:border-2"
+        className={
+          isWordInList(word.id, learntList)
+          ? "bg-emerald-400 border-slate-400 hover:border-slate-600 hover:from-slate-500 hover:to-slate-300 focus-visible:border-slate-800  flex h-28 w-28 items-center justify-center overflow-hidden rounded-md border text-4xl font-medium hover:bg-gradient-to-b focus:outline-none focus-visible:border-2"
+          : "bg-slate-200 border-slate-400 hover:border-slate-600 hover:from-slate-500 hover:to-slate-300 focus-visible:border-slate-800  flex h-28 w-28 items-center justify-center overflow-hidden rounded-md border text-4xl font-medium hover:bg-gradient-to-b focus:outline-none focus-visible:border-2"
+        }
         {...props}
         >
         <motion.span

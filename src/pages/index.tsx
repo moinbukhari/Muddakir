@@ -18,34 +18,48 @@ const btn =
 // type QuizProps = {
 //   words: Word[];
 // };
+function isWordInList(id: number, wordList: QuranicWord[]): boolean {
+  for (let i = 0; i < wordList.length; i++) {
+    if (wordList[i]?.id === id) {
+      return true;
+    }
+  }
+  return false;
+}
 
 const WordFeed = () => {
-  const { user } = useUser();
+  const { isLoaded: userLoaded, isSignedIn, user } = useUser();
+  const userId = user?.id;
+  const ctx = api.useContext();
   const { data, isLoading: wordsLoading } = api.learn.getAll.useQuery();
-
   const [activeWord, setActiveWord] = useState<QuranicWord | null>(null);
-
-  const {mutate} = api.learn.learn.useMutation({
+  const { mutate } = api.learn.learn.useMutation({
     onSuccess: () => {
       if (activeWord) {
-        toast.success(`Learnt ${activeWord?.translation} in Arabic`);
+        toast.success(`Learnt "${activeWord?.translation}" in Arabic`);
       }
+      void ctx.learn.userWords.invalidate();
     },
-    onError: (e) => {
+    onError: () => {
       toast.error(`Failed! Try Again Later`);
     },
   });
+  const { data: userWords } = api.learn.userWords.useQuery({ userId: userId ?? ""}, {enabled: !!userId});
+
   
-  
-  if (wordsLoading)
+  if (!userLoaded) {
+    return <div>Something went wrong 1</div>;
+  }  
+
+  console.log(userWords);
+  if (wordsLoading || (isSignedIn && !userWords))
     return (
       <div className="flex grow">
         <LoadingPage />
       </div>
     );
-  if (!data) return <div>Something went wrong</div>;
 
-  
+  if (!data) return <div>Something went wrong</div>;
 
   return (
     <div className="mt-10 flex flex-col items-center justify-center gap-20 lg:mr-5 lg:flex-row lg:gap-10">
@@ -64,7 +78,11 @@ const WordFeed = () => {
               : "item-center flex max-w-screen-md"
           }
         >
-          <WordList list={data} onWordSelect={setActiveWord} />
+          <WordList
+            list={data}
+            learntList={userWords}
+            onWordSelect={setActiveWord}
+          />
         </motion.div>
       </AnimatePresence>
 
@@ -75,7 +93,7 @@ const WordFeed = () => {
               word={activeWord}
               onClose={() => setActiveWord(null)}
             />
-            {user && (
+            {user && userWords && !isWordInList(activeWord?.id, userWords) && (
               <button
                 className={btn}
                 onClick={() =>
@@ -84,6 +102,12 @@ const WordFeed = () => {
               >
                 Learn Word
               </button>
+            )}
+
+            {user && userWords && isWordInList(activeWord?.id, userWords) && (
+              <span className="inline-flex items-center rounded-full border border-gray-300 bg-emerald-300 px-3 py-1.5 font-medium text-slate-800 shadow-sm ">
+                You Have Learnt This Word
+              </span>
             )}
           </div>
         )}
