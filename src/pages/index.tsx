@@ -9,15 +9,15 @@ import { SignInButton, useUser, UserButton } from "@clerk/nextjs";
 import { api } from "~/utils/api";
 import { LoadingPage } from "~/components/loading";
 import { PageLayout } from "~/components/layout";
-import type { Word } from "@prisma/client";
+//import type { Word } from "@prisma/client";
 import { toast } from "react-hot-toast";
 
 const btn =
   "inline-flex items-center px-3 py-1.5 border border-gray-300 shadow-sm font-medium rounded-full text-gray-700 bg-white hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500";
 
-type QuizProps = {
-  words: Word[];
-};
+// type QuizProps = {
+//   words: Word[];
+// };
 
 const WordFeed = () => {
   const { user } = useUser();
@@ -89,8 +89,20 @@ const WordFeed = () => {
   );
 };
 
-const Quiz = ({ words }: QuizProps) => {
+const Quiz = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const { data , isLoading: wordsLoading} = api.learn.getAll.useQuery();
+  const words = data;
+
+  if (wordsLoading)
+    return (
+      <div className="flex grow">
+        <LoadingPage />
+      </div>
+    );
+  if (!words) return <div>Something went wrong</div>;
+
+  
   const handleNext = () => {
     if (currentIndex >= words.length - 1) {
       setCurrentIndex(0);
@@ -139,17 +151,16 @@ const Home: NextPage = () => {
   const [quiz, setQuiz] = useState(false);
 
   const { isLoaded: userLoaded, isSignedIn, user } = useUser();
-  const { data } = api.learn.getAll.useQuery();
+  api.learn.getAll.useQuery();
 
+  if (!userLoaded){
+    return <LoadingPage/>;
+  }
   // const firstCuisine = api.learn.hasUserLearnt.useQuery({
   //   userId: "user_2OsognTRdyKnF8fkuX2kXzHyU6r",
   //   wordId: activeWord.id,
   // });
   // console.log(firstCuisine.data);
-
-  if (!userLoaded || !data) return <div />;
-
-  const dbWords = data;
 
   const handleQuiz = (e: React.ChangeEvent<HTMLInputElement>) => {
     const isTrueSet = e.target.value === "true";
@@ -235,10 +246,10 @@ const Home: NextPage = () => {
           </label>
         </ul>
       </div>
-
+      
       {!quiz && <WordFeed />}
 
-      {quiz && <Quiz words={dbWords} />}
+      {quiz && <Quiz/>}
     </PageLayout>
   );
 };
