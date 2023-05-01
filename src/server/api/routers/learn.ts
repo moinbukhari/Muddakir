@@ -31,6 +31,16 @@ export const learnRouter = createTRPCRouter({
       if(input.userId === ""){
         return undefined;
       }
+      const userExists = await ctx.prisma.user.findUnique({
+        where: { id: input.userId },
+      });
+      console.log(userExists);
+      if (!userExists) {
+        console.log("User didn't exist in database");
+        await ctx.prisma.user.create({
+          data: { id: input.userId },
+        });
+      }
       const wordsLearned = await ctx.prisma.user.findUnique({
         where: { id: input.userId },
         include: { words: { include: { word: true } } }
