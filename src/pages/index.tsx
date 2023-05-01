@@ -24,6 +24,19 @@ const WordFeed = () => {
   const { data, isLoading: wordsLoading } = api.learn.getAll.useQuery();
 
   const [activeWord, setActiveWord] = useState<QuranicWord | null>(null);
+
+  const {mutate} = api.learn.learn.useMutation({
+    onSuccess: () => {
+      if (activeWord) {
+        toast.success(`Learnt ${activeWord?.translation} in Arabic`);
+      }
+    },
+    onError: (e) => {
+      toast.error(`Failed! Try Again Later`);
+    },
+  });
+  
+  
   if (wordsLoading)
     return (
       <div className="flex grow">
@@ -32,17 +45,7 @@ const WordFeed = () => {
     );
   if (!data) return <div>Something went wrong</div>;
 
-  const { mutate, isLoading: isLearning } = api.learn.learn.useMutation({
-    onSuccess: () => {
-      if (activeWord) {
-        toast.success(`Learnt ${activeWord?.translation} in Arabic`);
-      }
-    },
-    onError: (e) => {
-      toast.error("Failed! Please try again later.");
-    },
-  });
-
+  
 
   return (
     <div className="mt-10 flex flex-col items-center justify-center gap-20 lg:mr-5 lg:flex-row lg:gap-10">
@@ -91,7 +94,7 @@ const WordFeed = () => {
 
 const Quiz = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const { data , isLoading: wordsLoading} = api.learn.getAll.useQuery();
+  const { data, isLoading: wordsLoading } = api.learn.getAll.useQuery();
   const words = data;
 
   if (wordsLoading)
@@ -102,7 +105,6 @@ const Quiz = () => {
     );
   if (!words) return <div>Something went wrong</div>;
 
-  
   const handleNext = () => {
     if (currentIndex >= words.length - 1) {
       setCurrentIndex(0);
@@ -153,8 +155,8 @@ const Home: NextPage = () => {
   const { isLoaded: userLoaded, isSignedIn, user } = useUser();
   api.learn.getAll.useQuery();
 
-  if (!userLoaded){
-    return <LoadingPage/>;
+  if (!userLoaded) {
+    return <LoadingPage />;
   }
   // const firstCuisine = api.learn.hasUserLearnt.useQuery({
   //   userId: "user_2OsognTRdyKnF8fkuX2kXzHyU6r",
@@ -184,6 +186,11 @@ const Home: NextPage = () => {
           </div>
           <div>
             {!isSignedIn && (
+              // <Link href="/sign-up" className="-m-1.5 flex p-1.5 text-center ">
+              //   <span className="border-b-4 border-slate-400  hover:border-slate-600">
+              //     Sign In
+              //   </span>
+              // </Link>
               <span className="border-b-4 border-slate-400  hover:border-slate-600">
                 <SignInButton />
               </span>
@@ -246,10 +253,10 @@ const Home: NextPage = () => {
           </label>
         </ul>
       </div>
-      
+
       {!quiz && <WordFeed />}
 
-      {quiz && <Quiz/>}
+      {quiz && <Quiz />}
     </PageLayout>
   );
 };
