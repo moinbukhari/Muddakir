@@ -44,12 +44,26 @@ const WordFeed = () => {
       toast.error(`Failed! Try Again Later`);
     },
   });
-  const { data: userWords } = api.learn.userWords.useQuery({ userId: userId ?? ""}, {enabled: !!userId});
 
-  
+  const { mutate: unlearn } = api.learn.unlearn.useMutation({
+    onSuccess: () => {
+      if (activeWord) {
+        toast(`Unlearnt "${activeWord?.translation}" in Arabic`);
+      }
+      void ctx.learn.userWords.invalidate();
+    },
+    onError: () => {
+      toast.error(`Failed! Try Again Later`);
+    },
+  });
+  const { data: userWords } = api.learn.userWords.useQuery(
+    { userId: userId ?? "" },
+    { enabled: !!userId }
+  );
+
   if (!userLoaded) {
     return <div>Something went wrong 1</div>;
-  }  
+  }
 
   console.log(userWords);
   if (wordsLoading || (isSignedIn && !userWords))
@@ -105,9 +119,19 @@ const WordFeed = () => {
             )}
 
             {user && userWords && isWordInList(activeWord?.id, userWords) && (
-              <span className="inline-flex items-center rounded-full border border-gray-300 bg-emerald-300 px-3 py-1.5 font-medium text-slate-800 shadow-sm ">
-                You Have Learnt This Word
-              </span>
+              <div className="flex flex-col gap-2 items-center justify-center">
+                <span className="inline-flex items-center rounded-full border border-gray-300 bg-emerald-300 px-3 py-1.5 font-medium text-slate-800 shadow-sm ">
+                  You Have Learnt This Word
+                </span>
+                <button
+                  className={btn}
+                  onClick={() =>
+                    unlearn({ learntById: user.id, wordLearntId: activeWord.id })
+                  }
+                >
+                  Unlearn Word
+                </button>
+              </div>
             )}
           </div>
         )}

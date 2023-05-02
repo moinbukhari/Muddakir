@@ -25,10 +25,25 @@ export const learnRouter = createTRPCRouter({
       return { success: true, vote: voteInDb };
     }),
 
+  unlearn: publicProcedure
+    .input(z.object({ wordLearntId: z.number(), learntById: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const result = await ctx.prisma.learn.delete({
+        where: {
+          userId_wordId: {
+            userId: input.learntById,
+            wordId: input.wordLearntId
+          }
+        },
+      });
+
+      return { success: true, res: result };
+    }),
+
   userWords: publicProcedure
     .input(z.object({ userId: z.string() }))
     .query(async ({ ctx, input }) => {
-      if(input.userId === ""){
+      if (input.userId === "") {
         return undefined;
       }
       const userExists = await ctx.prisma.user.findUnique({
@@ -43,7 +58,7 @@ export const learnRouter = createTRPCRouter({
       }
       const wordsLearned = await ctx.prisma.user.findUnique({
         where: { id: input.userId },
-        include: { words: { include: { word: true } } }
+        include: { words: { include: { word: true } } },
       });
 
       return wordsLearned?.words.map((learn) => learn.word);

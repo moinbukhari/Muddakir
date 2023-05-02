@@ -27,9 +27,9 @@ model Word {
 // Define the join table and its columns
 model Learn {
   id        Int      @id @default(autoincrement())
-  user      User     @relation(name: "UserWords", fields: [userId], references: [id])
+  user      User     @relation(name: "UserWords", fields: [userId], references: [id], onDelete: Cascade)
   userId    String
-  word      Word     @relation(name: "UserWords", fields: [wordId], references: [id])
+  word      Word     @relation(name: "UserWords", fields: [wordId], references: [id], onDelete: Cascade)
   wordId    Int
   learnedAt DateTime @default(now())
   @@unique([userId, wordId])
