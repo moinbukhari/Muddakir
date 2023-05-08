@@ -1,5 +1,5 @@
 import { type NextPage } from "next";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import type { QuranicWord } from "../components/WordCard";
 import WordList from "../components/WordList";
@@ -9,15 +9,15 @@ import { SignInButton, useUser, UserButton } from "@clerk/nextjs";
 import { api } from "~/utils/api";
 import { LoadingPage } from "~/components/loading";
 import { PageLayout } from "~/components/layout";
-//import type { Word } from "@prisma/client";
+import type { Word } from "@prisma/client";
 import { toast } from "react-hot-toast";
 
 const btn =
   "inline-flex items-center px-3 py-1.5 border border-gray-300 shadow-sm font-medium rounded-full text-gray-700 bg-white hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500";
 
-// type QuizProps = {
-//   words: Word[];
-// };
+const opt_button =
+  "flex items-center justify-center p-4 cursor-pointer rounded-md";
+
 function isWordInList(id: number, wordList: QuranicWord[]): boolean {
   for (let i = 0; i < wordList.length; i++) {
     if (wordList[i]?.id === id) {
@@ -25,6 +25,48 @@ function isWordInList(id: number, wordList: QuranicWord[]): boolean {
     }
   }
   return false;
+}
+
+// function getRandomWordIndex(words: Word[]): number {
+
+//   return Math.floor(Math.random() * words.length);
+// }
+
+function getRandomWordList(words: Word[]): Word[] {
+  const shuffled  = shuffleWords(words).slice(0, 5);
+  console.log(shuffled);
+  return shuffled;
+}
+
+function getRandomIncorrectAnswers(words: Word[], curr_word: Word): string[] {
+  // Get all the translations except for the correct answer
+  const translations = words
+    .filter((word) => word.translation !== curr_word.translation)
+    .map((word) => word.translation);
+  // Shuffle the translations array
+  const shuffledTranslations = shuffle(translations);
+  // Return the first three elements of the shuffled array (i.e., three random incorrect answers)
+  return shuffledTranslations.slice(0, 3);
+}
+
+function shuffle(a: string[]): string[] {
+  const array = a.filter((word) => word !== undefined);
+
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]] as [string, string];
+  }
+  return array;
+}
+
+function shuffleWords(a: Word[]): Word[] {
+  const array = a.filter((word) => word !== undefined);
+
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]] as [Word, Word];
+  }
+  return array;
 }
 
 const WordFeed = () => {
@@ -48,7 +90,7 @@ const WordFeed = () => {
   const { mutate: unlearn } = api.learn.unlearn.useMutation({
     onSuccess: () => {
       if (activeWord) {
-        toast(`Unlearnt "${activeWord?.translation}" in Arabic`);
+        toast(`Unlearnt "${activeWord?.arabic}"`);
       }
       void ctx.learn.userWords.invalidate();
     },
@@ -65,7 +107,6 @@ const WordFeed = () => {
     return <div>Something went wrong 1</div>;
   }
 
-  console.log(userWords);
   if (wordsLoading || (isSignedIn && !userWords))
     return (
       <div className="flex grow">
@@ -119,14 +160,17 @@ const WordFeed = () => {
             )}
 
             {user && userWords && isWordInList(activeWord?.id, userWords) && (
-              <div className="flex flex-col gap-2 items-center justify-center">
+              <div className="flex flex-col items-center justify-center gap-2">
                 <span className="inline-flex items-center rounded-full border border-gray-300 bg-emerald-300 px-3 py-1.5 font-medium text-slate-800 shadow-sm ">
                   You Have Learnt This Word
                 </span>
                 <button
                   className={btn}
                   onClick={() =>
-                    unlearn({ learntById: user.id, wordLearntId: activeWord.id })
+                    unlearn({
+                      learntById: user.id,
+                      wordLearntId: activeWord.id,
+                    })
                   }
                 >
                   Unlearn Word
@@ -142,8 +186,59 @@ const WordFeed = () => {
 
 const Quiz = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const { data, isLoading: wordsLoading } = api.learn.getAll.useQuery();
-  const words = data;
+  const [score, setScore] = useState(0);
+  const [currentWord, setCurrentWord] = useState<Word>();
+  const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
+  const [currentOptions, setCurrentOptions] = useState<string[]>([]);
+  const [randomWords, setRandomWords] = useState<Word[]>([]);
+  const { user } = useUser();
+  const userId = user?.id;
+  const { data: userWords, isLoading: wordsLoading } =
+    api.learn.userWords.useQuery({ userId: userId ?? "" });
+
+  const handleNext = () => {
+    if (selectedAnswer === currentWord?.translation) {
+      setScore(score + 1);
+    }
+    setCurrentIndex(currentIndex + 1);
+    setSelectedAnswer(null);
+  };
+
+  const handleAnswer = (answer: string) => {
+    setSelectedAnswer(answer);
+  };
+
+  useEffect(() => {
+    if (currentWord && userWords) {
+      const wrongAnswers = getRandomIncorrectAnswers(userWords, currentWord);
+      const opts = shuffle([...wrongAnswers, currentWord.translation]);
+      setCurrentOptions(opts);
+    }
+  }, [currentWord, userWords]);
+
+  useEffect(() => {
+    if (userWords && currentIndex === 0) {
+      const randUserWords = getRandomWordList(userWords);
+      setRandomWords(randUserWords);
+      //console.log(randomWords);
+      //setCurrentWord(randUserWords[0]);
+    } 
+  }, [currentIndex, userWords]);
+
+  useEffect(() => {
+    if (randomWords.length>0 && currentIndex<randomWords.length) {
+      console.log(randomWords);
+      setCurrentWord(randomWords[currentIndex]);
+      //setCurrentWord(randUserWords[0]);
+    } 
+  }, [currentIndex, randomWords]);
+  
+
+  // useEffect(() => {
+  //   if (currentWord) {
+  //     const wrongAnswers = getRandomIncorrectAnswers(userWords, currentWord);
+  //   }
+  // }, [userWords, currentWord]);
 
   if (wordsLoading)
     return (
@@ -151,23 +246,39 @@ const Quiz = () => {
         <LoadingPage />
       </div>
     );
-  if (!words) return <div>Something went wrong</div>;
 
-  const handleNext = () => {
-    if (currentIndex >= words.length - 1) {
-      setCurrentIndex(0);
-    } else {
-      setCurrentIndex(currentIndex + 1);
+  if (userWords) {
+    if (userWords.length < 5) {
+      return <div className="mt-3 text-xl">Learn 5 words before taking the Quiz</div>;
     }
-  };
+
+    if (currentIndex === 5) {
+      return (
+        <div className="mt-3 flex flex-col justify-center items-center text-center gap-2">
+          <h1 className="text-xl">Quiz Complete!</h1>
+          <p>
+            Your score was {score} out of {5}
+          </p>
+        </div>
+      );
+    }
+  }
+
+  if (!userWords || !currentWord) {
+    return (
+      <div className="flex grow">
+        <LoadingPage />
+      </div>
+    );
+  }
 
   return (
-    <div className="m-8 flex flex-col items-center justify-center gap-2 rounded">
+    <div className="m-8 flex flex-col items-center justify-center gap-1 rounded">
       <div className="relative col-span-2 h-3 w-64 overflow-hidden rounded-full bg-slate-300">
         <motion.div
           className="absolute inset-0 bg-slate-800"
           style={{ originX: "left" }}
-          animate={{ scaleX: currentIndex / words.length }}
+          animate={{ scaleX: currentIndex / 5 }}
           initial={{ scaleX: 0 }}
           transition={{ type: "spring", bounce: 0 }}
         />
@@ -184,24 +295,54 @@ const Quiz = () => {
               transition={{ duration: 0.8 }}
               className="w-full text-center"
             >
-              {words.at(currentIndex)?.arabic}
+              {currentWord.arabic}
             </motion.div>
           </AnimatePresence>
         </div>
       </div>
 
-      <button className="btn-gray" onClick={() => handleNext()}>
-        Next
-      </button>
+      <div className="mt-4 flex flex-col items-center justify-center gap-4">
+        <ul className="items grid grid-cols-2 gap-4 text-center ">
+          {currentOptions.map((option) => (
+            <li
+              key={option}
+              onClick={() => handleAnswer(option)}
+              className={
+                !!selectedAnswer
+                  ? option === currentWord.translation
+                    ? `${opt_button} bg-emerald-300   ${
+                        selectedAnswer === option
+                          ? "shadow-md ring-4 ring-emerald-600"
+                          : ""
+                      }`
+                    : `${opt_button} bg-red-400  ${
+                        selectedAnswer === option
+                          ? "shadow-md ring-4 ring-red-600"
+                          : ""
+                      } `
+                  : `${opt_button} bg-indigo-200 ring-2 ring-indigo-500 hover:bg-indigo-300 hover:shadow-md `
+              }
+            >
+              {option}
+            </li>
+          ))}
+        </ul>
+
+        {!!selectedAnswer && (
+          <button className="btn-gray" onClick={() => handleNext()}>
+            {`${(currentIndex+1)<randomWords.length ? "Next": "Done" }`}
+          </button>
+        )}
+      </div>
     </div>
   );
 };
 
 const Home: NextPage = () => {
   const [quiz, setQuiz] = useState(false);
-
   const { isLoaded: userLoaded, isSignedIn, user } = useUser();
   api.learn.getAll.useQuery();
+  api.learn.userWords.useQuery({ userId: user?.id ?? "" });
 
   if (!userLoaded) {
     return <LoadingPage />;
@@ -265,46 +406,53 @@ const Home: NextPage = () => {
       </div>
 
       {/* options */}
-      <div className="mt-3 flex flex-col items-center justify-center gap-8">
-        <ul className="flex flex-wrap gap-4">
-          <label className="cursor-pointer ">
-            <input
-              type="radio"
-              name="option"
-              value="false"
-              className="peer sr-only"
-              onChange={handleQuiz}
-              checked={quiz === false}
-            />
-            <div className="w-30 max-w-xl rounded-md bg-white p-5 text-gray-700 ring-2 ring-gray-200 hover:shadow-md peer-checked:bg-rose-300 peer-checked:ring-rose-500 peer-checked:ring-offset-2">
-              <div className="flex items-center justify-between">
-                <p className="text-sm font-semibold uppercase">Vocab</p>
+      <div className="flex flex-col items-center justify-center gap-4">
+        <div className="mt-3 flex flex-col items-center justify-center gap-8">
+          <ul className="flex flex-wrap gap-4">
+            <label className="cursor-pointer ">
+              <input
+                type="radio"
+                name="option"
+                value="false"
+                className="peer sr-only"
+                onChange={handleQuiz}
+                checked={quiz === false}
+              />
+              <div className="w-30 max-w-xl rounded-md bg-white p-5 text-gray-700 ring-2 ring-gray-200 hover:shadow-md peer-checked:bg-rose-300 peer-checked:ring-rose-500 peer-checked:ring-offset-2">
+                <div className="flex items-center justify-between">
+                  <p className="text-sm font-semibold uppercase">Vocab</p>
+                </div>
               </div>
-            </div>
-          </label>
-          <label className="cursor-pointer ">
-            <input
-              type="radio"
-              name="option"
-              value="true"
-              className="peer sr-only"
-              onChange={handleQuiz}
-              checked={quiz === true}
-            />
-            <div className="w-30 max-w-xl rounded-md bg-white p-5 text-gray-700 ring-2 ring-gray-200 hover:shadow-md peer-checked:bg-rose-300 peer-checked:ring-rose-500 peer-checked:ring-offset-2">
-              <div className="flex items-center justify-between">
-                <p className="text-sm font-semibold uppercase text-gray-700">
-                  Quiz
-                </p>
+            </label>
+            <label className="cursor-pointer ">
+              <input
+                type="radio"
+                name="option"
+                value="true"
+                className="peer sr-only"
+                onChange={handleQuiz}
+                checked={quiz === true}
+              />
+              <div className="w-30 max-w-xl rounded-md bg-white p-5 text-gray-700 ring-2 ring-gray-200 hover:shadow-md peer-checked:bg-rose-300 peer-checked:ring-rose-500 peer-checked:ring-offset-2">
+                <div className="flex items-center justify-between">
+                  <p className="text-sm font-semibold uppercase text-gray-700">
+                    Quiz
+                  </p>
+                </div>
               </div>
-            </div>
-          </label>
-        </ul>
+            </label>
+          </ul>
+        </div>
+
+        {!quiz && <WordFeed />}
+
+        {quiz && isSignedIn && <Quiz />}
+        {quiz && !isSignedIn && (
+          <div>
+            <span>Sign in to use quiz feature</span>
+          </div>
+        )}
       </div>
-
-      {!quiz && <WordFeed />}
-
-      {quiz && <Quiz />}
     </PageLayout>
   );
 };
