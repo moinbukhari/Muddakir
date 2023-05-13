@@ -1,23 +1,32 @@
-import { withClerkMiddleware } from "@clerk/nextjs/server";
-import { NextResponse } from "next/server";
+// import { withClerkMiddleware } from "@clerk/nextjs/server";
+// import { NextResponse } from "next/server";
 
  
-export default withClerkMiddleware(() => {
-  return NextResponse.next();
-});
+// export default withClerkMiddleware(() => {
+//   return NextResponse.next();
+// });
  
-// Stop Middleware running on static files and public folder
+// // Stop Middleware running on static files and public folder
+// export const config = {
+//   matcher: [
+//     /*
+//      * Match all request paths except for the ones starting with:
+//      * - _next
+//      * - static (static files)
+//      * - favicon.ico (favicon file)
+//      * - public folder
+//      * - public folder
+//      */
+//     "/((?!static|.*\\..*|_next|favicon.ico).*)",
+//     "/",
+//   ],
+// }
+
+import { authMiddleware } from "@clerk/nextjs";
+
+export default authMiddleware();
+
 export const config = {
-  matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - _next
-     * - static (static files)
-     * - favicon.ico (favicon file)
-     * - public folder
-     * - public folder
-     */
-    "/((?!static|.*\\..*|_next|favicon.ico).*)",
-    "/",
-  ],
-}
+  matcher: ["/((?!.*\\..*|_next).*)"],
+  publicRoutes: ["/"],
+};

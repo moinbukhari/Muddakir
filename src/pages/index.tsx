@@ -341,10 +341,10 @@ const Quiz = () => {
                           ? "shadow-md ring-4 ring-emerald-600"
                           : ""
                       }`
-                    : `${opt_button} bg-red-400  ${
+                    : `${opt_button}   ${
                         selectedAnswer === option
-                          ? "shadow-md ring-4 ring-red-600"
-                          : ""
+                          ? "shadow-md ring-4 ring-red-600 bg-red-300"
+                          : "bg-red-400"
                       } `
                   : `${opt_button} bg-indigo-200 ring-2 ring-indigo-500 hover:bg-indigo-300 hover:shadow-md `
               }
@@ -401,7 +401,7 @@ const Home: NextPage = () => {
           </div>
           <div>
             {!isSignedIn && (
-              // <Link href="/sign-up" className="-m-1.5 flex p-1.5 text-center ">
+              // <Link href="/sign-in" className="-m-1.5 flex p-1.5 text-center ">
               //   <span className="border-b-4 border-slate-400  hover:border-slate-600">
               //     Sign In
               //   </span>
