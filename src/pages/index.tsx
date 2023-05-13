@@ -33,7 +33,7 @@ function isWordInList(id: number, wordList: QuranicWord[]): boolean {
 // }
 
 function getRandomWordList(words: Word[]): Word[] {
-  const shuffled  = shuffleWords(words).slice(0, 5);
+  const shuffled = shuffleWords(words).slice(0, 5);
   console.log(shuffled);
   return shuffled;
 }
@@ -136,6 +136,7 @@ const WordFeed = () => {
           <WordList
             list={data}
             learntList={userWords}
+            currWord = {activeWord}
             onWordSelect={setActiveWord}
           />
         </motion.div>
@@ -175,6 +176,14 @@ const WordFeed = () => {
                 >
                   Unlearn Word
                 </button>
+              </div>
+            )}
+
+            {!user && (
+              <div className="flex flex-col items-center justify-center gap-2">
+                <span className="inline-flex items-center rounded-full border border-gray-300 bg-rose-400 px-3 py-1.5 font-medium text-slate-800 shadow-sm ">
+                  Sign In to Learn 
+                </span>
               </div>
             )}
           </div>
@@ -222,17 +231,16 @@ const Quiz = () => {
       setRandomWords(randUserWords);
       //console.log(randomWords);
       //setCurrentWord(randUserWords[0]);
-    } 
+    }
   }, [currentIndex, userWords]);
 
   useEffect(() => {
-    if (randomWords.length>0 && currentIndex<randomWords.length) {
+    if (randomWords.length > 0 && currentIndex < randomWords.length) {
       console.log(randomWords);
       setCurrentWord(randomWords[currentIndex]);
       //setCurrentWord(randUserWords[0]);
-    } 
+    }
   }, [currentIndex, randomWords]);
-  
 
   // useEffect(() => {
   //   if (currentWord) {
@@ -249,12 +257,14 @@ const Quiz = () => {
 
   if (userWords) {
     if (userWords.length < 5) {
-      return <div className="mt-3 text-xl">Learn 5 words before taking the Quiz</div>;
+      return (
+        <div className="mt-3 text-xl">Learn 5 words before taking the Quiz</div>
+      );
     }
 
     if (currentIndex === 5) {
       return (
-        <div className="mt-3 flex flex-col justify-center items-center text-center gap-2">
+        <div className="mt-3 flex flex-col items-center justify-center gap-2 text-center">
           <h1 className="text-xl">Quiz Complete!</h1>
           <p>
             Your score was {score} out of {5}
@@ -330,7 +340,7 @@ const Quiz = () => {
 
         {!!selectedAnswer && (
           <button className="btn-gray" onClick={() => handleNext()}>
-            {`${(currentIndex+1)<randomWords.length ? "Next": "Done" }`}
+            {`${currentIndex + 1 < randomWords.length ? "Next" : "Done"}`}
           </button>
         )}
       </div>

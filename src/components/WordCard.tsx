@@ -22,10 +22,12 @@ function isWordInList(id: number, wordList: QuranicWord[] | undefined): boolean 
 const WordCard = ({
     word,
     learntList,
+    currWord, 
     ...props
   }: {
     word: QuranicWord;
     learntList: QuranicWord[] | undefined,
+    currWord: QuranicWord | null;
   } & Omit<React.ComponentPropsWithoutRef<"button">, "href">) => {
 
   return (
@@ -33,9 +35,9 @@ const WordCard = ({
       <button
         className={
           isWordInList(word.id, learntList)
-          ? "bg-emerald-400 border-slate-400 hover:border-slate-600 hover:from-slate-500 hover:to-slate-300 focus-visible:border-slate-800  flex h-28 w-28 items-center justify-center overflow-hidden rounded-md border text-4xl font-medium hover:bg-gradient-to-b focus:outline-none focus-visible:border-2"
-          : "bg-slate-200 border-slate-400 hover:border-slate-600 hover:from-slate-500 hover:to-slate-300 focus-visible:border-slate-800  flex h-28 w-28 items-center justify-center overflow-hidden rounded-md border text-4xl font-medium hover:bg-gradient-to-b focus:outline-none focus-visible:border-2"
-        }
+          ? `bg-emerald-400 border-slate-400 hover:border-slate-600 hover:from-slate-500 hover:to-slate-300 focus-visible:border-slate-800  flex h-28 w-28 items-center justify-center overflow-hidden rounded-md border text-4xl font-medium hover:bg-gradient-to-b focus:outline-none focus-visible:border-2 ${currWord?.id=== word.id ? 'shadow-md ring-4 ring-rose-400': ''}`
+          : `bg-slate-200 border-slate-400 hover:border-slate-600 hover:from-slate-500 hover:to-slate-300 focus-visible:border-slate-800  flex h-28 w-28 items-center justify-center overflow-hidden rounded-md border text-4xl font-medium hover:bg-gradient-to-b focus:outline-none focus-visible:border-2 ${currWord?.id ===word.id ? 'shadow-md ring-4 ring-rose-400': ''}`
+        } 
         {...props}
         >
         <motion.span
