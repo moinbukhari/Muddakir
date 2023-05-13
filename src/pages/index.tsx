@@ -118,7 +118,7 @@ const WordFeed = () => {
 
   return (
     <div className="mt-10 flex flex-col items-center justify-center gap-20 lg:mr-5 lg:flex-row lg:gap-10">
-      <AnimatePresence mode="popLayout">
+      {/* <AnimatePresence mode="wait">
         <motion.div
           layout
           key={activeWord?.id}
@@ -140,7 +140,23 @@ const WordFeed = () => {
             onWordSelect={setActiveWord}
           />
         </motion.div>
-      </AnimatePresence>
+      </AnimatePresence> */}
+
+      <div
+          key={activeWord?.id}
+          className={
+            activeWord
+              ? "item-center hidden max-w-screen-md lg:flex"
+              : "item-center flex max-w-screen-md"
+          }
+        >
+          <WordList
+            list={data}
+            learntList={userWords}
+            currWord = {activeWord}
+            onWordSelect={setActiveWord}
+          />
+        </div>
 
       <AnimatePresence mode="popLayout">
         {activeWord && (
