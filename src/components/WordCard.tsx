@@ -5,6 +5,9 @@ export interface QuranicWord {
   arabic: string;
   transliteration: string;
   translation: string;
+  frequency: number;
+  wordType: string;
+
 }
 
 function isWordInList(id: number, wordList: QuranicWord[] | undefined): boolean {

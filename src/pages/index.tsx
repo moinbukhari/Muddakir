@@ -11,6 +11,8 @@ import { LoadingPage } from "~/components/loading";
 import { PageLayout } from "~/components/layout";
 import type { Word } from "@prisma/client";
 import { toast } from "react-hot-toast";
+import quranIcon from "../../public/quran.png";
+import Image from "next/image";
 
 const btn =
   "inline-flex items-center px-3 py-1.5 border border-gray-300 shadow-sm font-medium rounded-full text-gray-700 bg-white hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500";
@@ -34,7 +36,6 @@ function isWordInList(id: number, wordList: QuranicWord[]): boolean {
 
 function getRandomWordList(words: Word[]): Word[] {
   const shuffled = shuffleWords(words).slice(0, 5);
-  console.log(shuffled);
   return shuffled;
 }
 
@@ -75,6 +76,8 @@ const WordFeed = () => {
   const ctx = api.useContext();
   const { data, isLoading: wordsLoading } = api.learn.getAll.useQuery();
   const [activeWord, setActiveWord] = useState<QuranicWord | null>(null);
+  const [totalFreq, setTotalFreq] = useState(0);
+  const totalQuranicWords = 77430;
   const { mutate } = api.learn.learn.useMutation({
     onSuccess: () => {
       if (activeWord) {
@@ -103,6 +106,12 @@ const WordFeed = () => {
     { enabled: !!userId }
   );
 
+  useEffect(() => {
+    if (userWords) {
+      setTotalFreq(userWords.reduce((accum, cur) => accum + cur.frequency, 0));
+    }
+  }, [userWords]);
+
   if (!userLoaded) {
     return <div>Something went wrong 1</div>;
   }
@@ -117,12 +126,33 @@ const WordFeed = () => {
   if (!data) return <div>Something went wrong</div>;
 
   return (
-    <div className="mt-10 flex flex-col items-center justify-center gap-20 lg:mr-5 lg:flex-row lg:gap-10 ">
+    <div className="flex flex-col items-center justify-center gap-10  ">
+      <div className="flex items-center justify-center gap-2">
+        <div className="relative col-span-2 h-4 w-64 overflow-hidden rounded-full bg-slate-300">
+          <motion.div
+            className="absolute inset-0 bg-emerald-500"
+            style={{ originX: "left" }}
+            animate={{ scaleX: totalFreq / totalQuranicWords }}
+            initial={{ scaleX: 0 }}
+            transition={{ type: "spring", bounce: 0 }}
+          />
+        </div>
+
+        <span className="text-center font-manrope font-semibold">
+          {((totalFreq * 100) / totalQuranicWords).toFixed(1)}% of
+        </span>
+
+        <Image src={quranIcon} width={32} height={32} alt="" />
+        {/* <span className="text-center font-manrope font-semibold">
+          {((data.reduce((accum, cur) => accum + cur.frequency, 0)*100)/totalQuranicWords).toFixed(1)}%
+        </span> */}
+      </div>
+
       <div
         key={activeWord?.id}
         className={
           activeWord
-            ? "item-center hidden max-w-screen-md 2xl:max-w-screen-lg lg:flex lg:-translate-x-1/4"
+            ? "item-center hidden max-w-screen-md lg:flex lg:-translate-x-1/4 2xl:max-w-screen-lg"
             : "item-center flex max-w-screen-md 2xl:max-w-screen-lg"
         }
       >
@@ -136,7 +166,7 @@ const WordFeed = () => {
 
       <AnimatePresence mode="popLayout">
         {activeWord && (
-          <div className="lg:fixed lg:top-12 lg:right-0 lg:h-screen flex items-center justify-center lg:mr-10 xl:mr-20">
+          <div className="flex items-center justify-center lg:fixed lg:right-0 lg:top-12 lg:mr-10 lg:h-screen xl:mr-20">
             <div className="flex flex-col items-center justify-center gap-2">
               <WordSidebar
                 word={activeWord}
@@ -196,6 +226,7 @@ const Quiz = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [score, setScore] = useState(0);
   const [currentWord, setCurrentWord] = useState<Word>();
+  const [wrongAnswers, setWrongAnswers] = useState<Word[]>([]);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [currentOptions, setCurrentOptions] = useState<string[]>([]);
   const [randomWords, setRandomWords] = useState<Word[]>([]);
@@ -207,6 +238,13 @@ const Quiz = () => {
   const handleNext = () => {
     if (selectedAnswer === currentWord?.translation) {
       setScore(score + 1);
+    } else {
+      if (currentWord) {
+        setWrongAnswers((prevWrongAnswers) => [
+          ...prevWrongAnswers,
+          currentWord,
+        ]);
+      }
     }
     setCurrentIndex(currentIndex + 1);
     setSelectedAnswer(null);
@@ -235,7 +273,6 @@ const Quiz = () => {
 
   useEffect(() => {
     if (randomWords.length > 0 && currentIndex < randomWords.length) {
-      console.log(randomWords);
       setCurrentWord(randomWords[currentIndex]);
       //setCurrentWord(randUserWords[0]);
     }
@@ -282,7 +319,7 @@ const Quiz = () => {
   }
 
   return (
-    <div className="m-8 flex flex-col items-center justify-center gap-1 rounded">
+    <div className="flex flex-col items-center justify-center gap-1 rounded">
       <div className="relative col-span-2 h-3 w-64 overflow-hidden rounded-full bg-slate-300">
         <motion.div
           className="absolute inset-0 bg-slate-800"
@@ -415,7 +452,7 @@ const Home: NextPage = () => {
       </div>
 
       {/* options */}
-      <div className="flex flex-col items-center justify-center gap-4 pb-6">
+      <div className="flex flex-col items-center justify-center gap-8 pb-6">
         <div className="mt-3 flex flex-col items-center justify-center gap-8">
           <ul className="flex flex-wrap gap-4">
             <label className="cursor-pointer ">

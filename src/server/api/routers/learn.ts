@@ -60,6 +60,8 @@ export const learnRouter = createTRPCRouter({
         where: { id: input.userId },
         include: { words: { include: { word: true } } },
       });
+      
+      const totalFrequency = wordsLearned?.words.reduce((accum, cur) => accum + cur.word.frequency, 0);
 
       return wordsLearned?.words.map((learn) => learn.word);
     }),
