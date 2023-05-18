@@ -126,9 +126,9 @@ const WordFeed = () => {
   if (!data) return <div>Something went wrong</div>;
 
   return (
-    <div className="mx-10 flex flex-col items-center justify-center gap-10  ">
+    <div className="mx-10 flex flex-col items-center justify-center gap-10 w-full">
       <div className="flex items-center justify-center gap-2">
-        <div className="relative col-span-2 h-4 w-64 overflow-hidden rounded-full bg-slate-300">
+        <div className="relative col-span-2 h-4 w-32 md:w-48  overflow-hidden rounded-full bg-slate-300">
           <motion.div
             className="absolute inset-0 bg-emerald-500"
             style={{ originX: "left" }}
