@@ -122,7 +122,7 @@ const WordFeed = () => {
         key={activeWord?.id}
         className={
           activeWord
-            ? "item-center hidden max-w-screen-md lg:flex lg:pr-24"
+            ? "item-center hidden max-w-screen-md lg:flex lg:-translate-x-1/4"
             : "item-center flex max-w-screen-md"
         }
       >
@@ -136,7 +136,7 @@ const WordFeed = () => {
 
       <AnimatePresence mode="popLayout">
         {activeWord && (
-          <div className="lg:fixed lg:top-12 lg:right-0 lg:h-screen flex items-center justify-center lg:mr-10">
+          <div className="lg:fixed lg:top-12 lg:right-0 lg:h-screen flex items-center justify-center lg:mr-10 xl:mr-20">
             <div className="flex flex-col items-center justify-center gap-2">
               <WordSidebar
                 word={activeWord}
@@ -263,9 +263,9 @@ const Quiz = () => {
 
     if (currentIndex === 5) {
       return (
-        <div className="mt-3 flex flex-col items-center justify-center gap-2 text-center">
-          <h1 className="text-xl">Quiz Complete!</h1>
-          <p>
+        <div className="mt-14 flex flex-col items-center justify-center gap-5 text-center font-manrope">
+          <h1 className="text-4xl">Quiz Complete!</h1>
+          <p className="text-2xl">
             Your score was {score} out of {5}
           </p>
         </div>
