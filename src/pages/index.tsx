@@ -117,91 +117,74 @@ const WordFeed = () => {
   if (!data) return <div>Something went wrong</div>;
 
   return (
-    <div className="mt-10 flex flex-col items-center justify-center gap-20 lg:mr-5 lg:flex-row lg:gap-10">
-      {/* <AnimatePresence mode="wait">
-        <motion.div
-          layout
-          key={activeWord?.id}
-          animate={{
-            opacity: 1,
-          }}
-          initial={{ y: 16, opacity: 0 }}
-          transition={{ type: "spring", damping: 30 }}
-          className={
-            activeWord
-              ? "item-center hidden max-w-screen-md lg:flex"
-              : "item-center flex max-w-screen-md"
-          }
-        >
-          <WordList
-            list={data}
-            learntList={userWords}
-            currWord = {activeWord}
-            onWordSelect={setActiveWord}
-          />
-        </motion.div>
-      </AnimatePresence> */}
-
+    <div className="mt-10 flex flex-col items-center justify-center gap-20 lg:mr-5 lg:flex-row lg:gap-10 ">
       <div
-          key={activeWord?.id}
-          className={
-            activeWord
-              ? "item-center hidden max-w-screen-md lg:flex"
-              : "item-center flex max-w-screen-md"
-          }
-        >
-          <WordList
-            list={data}
-            learntList={userWords}
-            currWord = {activeWord}
-            onWordSelect={setActiveWord}
-          />
-        </div>
+        key={activeWord?.id}
+        className={
+          activeWord
+            ? "item-center hidden max-w-screen-md lg:flex lg:pr-24"
+            : "item-center flex max-w-screen-md"
+        }
+      >
+        <WordList
+          list={data}
+          learntList={userWords}
+          currWord={activeWord}
+          onWordSelect={setActiveWord}
+        />
+      </div>
 
       <AnimatePresence mode="popLayout">
         {activeWord && (
-          <div className="flex flex-col items-center justify-center gap-2">
-            <WordSidebar
-              word={activeWord}
-              onClose={() => setActiveWord(null)}
-            />
-            {user && userWords && !isWordInList(activeWord?.id, userWords) && (
-              <button
-                className={btn}
-                onClick={() =>
-                  mutate({ learntById: user.id, wordLearntId: activeWord.id })
-                }
-              >
-                Learn Word
-              </button>
-            )}
+          <div className="lg:fixed lg:top-12 lg:right-0 lg:h-screen flex items-center justify-center lg:mr-10">
+            <div className="flex flex-col items-center justify-center gap-2">
+              <WordSidebar
+                word={activeWord}
+                onClose={() => setActiveWord(null)}
+              />
+              {user &&
+                userWords &&
+                !isWordInList(activeWord?.id, userWords) && (
+                  <button
+                    className={btn}
+                    onClick={() =>
+                      mutate({
+                        learntById: user.id,
+                        wordLearntId: activeWord.id,
+                      })
+                    }
+                  >
+                    Learn Word
+                  </button>
+                )}
 
-            {user && userWords && isWordInList(activeWord?.id, userWords) && (
-              <div className="flex flex-col items-center justify-center gap-2">
-                <span className="inline-flex items-center rounded-full border border-gray-300 bg-emerald-300 px-3 py-1.5 font-medium text-slate-800 shadow-sm ">
-                  You Have Learnt This Word
-                </span>
-                <button
-                  className={btn}
-                  onClick={() =>
-                    unlearn({
-                      learntById: user.id,
-                      wordLearntId: activeWord.id,
-                    })
-                  }
-                >
-                  Unlearn Word
-                </button>
-              </div>
-            )}
+              {user && userWords && isWordInList(activeWord?.id, userWords) && (
+                <div className="flex flex-col items-center justify-center gap-2">
+                  <span className="inline-flex items-center rounded-full border border-gray-300 bg-emerald-300 px-3 py-1.5 font-medium text-slate-800 shadow-sm ">
+                    You Have Learnt This Word
+                  </span>
+                  <button
+                    className={btn}
+                    onClick={() =>
+                      unlearn({
+                        learntById: user.id,
+                        wordLearntId: activeWord.id,
+                      })
+                    }
+                  >
+                    Unlearn Word
+                  </button>
+                </div>
+              )}
 
-            {!user && (
-              <div className="flex flex-col items-center justify-center gap-2">
-                <span className="inline-flex items-center rounded-full border border-gray-300 bg-rose-400 px-3 py-1.5 font-medium text-slate-800 shadow-sm ">
-                  Sign In to Learn 
-                </span>
-              </div>
-            )}
+              {!user && (
+                <div className="flex flex-col items-center justify-center gap-2">
+                  <span className="inline-flex items-center rounded-full border border-gray-300 bg-rose-400 px-3 py-1.5 font-medium text-slate-800 shadow-sm ">
+                    Sign In to Learn
+                  </span>
+                </div>
+              )}
+            </div>
           </div>
         )}
       </AnimatePresence>
@@ -343,7 +326,7 @@ const Quiz = () => {
                       }`
                     : `${opt_button}   ${
                         selectedAnswer === option
-                          ? "shadow-md ring-4 ring-red-600 bg-red-300"
+                          ? "bg-red-300 shadow-md ring-4 ring-red-600"
                           : "bg-red-400"
                       } `
                   : `${opt_button} bg-indigo-200 ring-2 ring-indigo-500 hover:bg-indigo-300 hover:shadow-md `
@@ -432,7 +415,7 @@ const Home: NextPage = () => {
       </div>
 
       {/* options */}
-      <div className="flex flex-col items-center justify-center gap-4">
+      <div className="flex flex-col items-center justify-center gap-4 pb-6">
         <div className="mt-3 flex flex-col items-center justify-center gap-8">
           <ul className="flex flex-wrap gap-4">
             <label className="cursor-pointer ">

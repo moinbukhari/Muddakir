@@ -21,6 +21,8 @@ model Word {
   arabic        String
   translation  String
   transliteration  String
+  frequency Int @default(0)
+  wordType String @default("N/A")
   learnedBy   Learn[]      @relation("UserWords")
 }
 
