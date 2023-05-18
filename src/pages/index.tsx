@@ -122,8 +122,8 @@ const WordFeed = () => {
         key={activeWord?.id}
         className={
           activeWord
-            ? "item-center hidden max-w-screen-md lg:flex lg:-translate-x-1/4"
-            : "item-center flex max-w-screen-md"
+            ? "item-center hidden max-w-screen-md 2xl:max-w-screen-lg lg:flex lg:-translate-x-1/4"
+            : "item-center flex max-w-screen-md 2xl:max-w-screen-lg"
         }
       >
         <WordList
