@@ -126,9 +126,9 @@ const WordFeed = () => {
   if (!data) return <div>Something went wrong</div>;
 
   return (
-    <div className="mx-10 flex flex-col items-center justify-center gap-10 w-full">
+    <div className="mx-10 flex w-full flex-col items-center justify-center gap-10">
       <div className="flex items-center justify-center gap-2">
-        <div className="relative col-span-2 h-4 w-32 md:w-48  overflow-hidden rounded-full bg-slate-300">
+        <div className="relative col-span-2 h-4 w-32 overflow-hidden  rounded-full bg-slate-300 md:w-48">
           <motion.div
             className="absolute inset-0 bg-emerald-500"
             style={{ originX: "left" }}
@@ -294,7 +294,9 @@ const Quiz = () => {
   if (userWords) {
     if (userWords.length < 5) {
       return (
-        <div className="mt-3 text-xl">Learn 5 words before taking the Quiz</div>
+        <div className="mt-3 text-2xl">
+          Learn 5 words before taking the Quiz
+        </div>
       );
     }
 
@@ -385,7 +387,7 @@ const Quiz = () => {
 };
 
 const Home: NextPage = () => {
-  const [quiz, setQuiz] = useState(false);
+  const [opts, setOpts] = useState("vocab");
   const { isLoaded: userLoaded, isSignedIn, user } = useUser();
   api.learn.getAll.useQuery();
   api.learn.userWords.useQuery({ userId: user?.id ?? "" });
@@ -400,8 +402,7 @@ const Home: NextPage = () => {
   // console.log(firstCuisine.data);
 
   const handleQuiz = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const isTrueSet = e.target.value === "true";
-    setQuiz(isTrueSet);
+    setOpts(e.target.value);
   };
 
   return (
@@ -459,10 +460,10 @@ const Home: NextPage = () => {
               <input
                 type="radio"
                 name="option"
-                value="false"
+                value="vocab"
                 className="peer sr-only"
                 onChange={handleQuiz}
-                checked={quiz === false}
+                checked={opts === "vocab"}
               />
               <div className="w-30 max-w-xl rounded-md bg-white p-5 text-gray-700 ring-2 ring-gray-200 hover:shadow-md peer-checked:bg-rose-300 peer-checked:ring-rose-500 peer-checked:ring-offset-2">
                 <div className="flex items-center justify-between">
@@ -474,10 +475,10 @@ const Home: NextPage = () => {
               <input
                 type="radio"
                 name="option"
-                value="true"
+                value="quiz"
                 className="peer sr-only"
                 onChange={handleQuiz}
-                checked={quiz === true}
+                checked={opts === "quiz"}
               />
               <div className="w-30 max-w-xl rounded-md bg-white p-5 text-gray-700 ring-2 ring-gray-200 hover:shadow-md peer-checked:bg-rose-300 peer-checked:ring-rose-500 peer-checked:ring-offset-2">
                 <div className="flex items-center justify-between">
@@ -487,15 +488,36 @@ const Home: NextPage = () => {
                 </div>
               </div>
             </label>
+            <label className="cursor-pointer ">
+              <input
+                type="radio"
+                name="option"
+                value="apply"
+                className="peer sr-only"
+                onChange={handleQuiz}
+                checked={opts === "apply"}
+              />
+              <div className="w-30 max-w-xl rounded-md bg-white p-5 text-gray-700 ring-2 ring-gray-200 hover:shadow-md peer-checked:bg-rose-300 peer-checked:ring-rose-500 peer-checked:ring-offset-2">
+                <div className="flex items-center justify-between">
+                  <p className="text-sm font-semibold uppercase">Apply</p>
+                </div>
+              </div>
+            </label>
           </ul>
         </div>
 
-        {!quiz && <WordFeed />}
+        {opts === "vocab" && <WordFeed />}
 
-        {quiz && isSignedIn && <Quiz />}
-        {quiz && !isSignedIn && (
+        {opts === "quiz" && isSignedIn && <Quiz />}
+        {(opts === "quiz"||opts==="apply") && !isSignedIn && (
           <div>
-            <span>Sign in to use quiz feature</span>
+            <span className="font-manrope text-2xl">Sign in to use this feature</span>
+          </div>
+        )}
+
+        {opts === "apply" && (
+          <div>
+            <span className="font-manrope text-2xl">Coming Soon ...</span>
           </div>
         )}
       </div>
