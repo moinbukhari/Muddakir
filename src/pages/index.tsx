@@ -166,7 +166,7 @@ const WordFeed = () => {
 
       <AnimatePresence mode="popLayout">
         {activeWord && (
-          <div className="flex items-center justify-center lg:fixed lg:right-0 lg:top-12 lg:mr-10 lg:h-screen xl:mr-20">
+          <div className="flex items-center justify-center lg:fixed lg:right-0 lg:top-32 lg:mr-10 lg:h-screen xl:mr-20">
             <div className="flex flex-col items-center justify-center gap-2">
               <WordSidebar
                 word={activeWord}
