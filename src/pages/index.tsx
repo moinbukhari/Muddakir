@@ -79,6 +79,7 @@ const WordFeed = () => {
   const [totalFreq, setTotalFreq] = useState(0);
   const totalQuranicWords = 77430;
   const { mutate } = api.learn.learn.useMutation({
+    
     onSuccess: () => {
       if (activeWord) {
         toast.success(`Learnt "${activeWord?.translation}" in Arabic`);

@@ -39,6 +39,9 @@ export default function WordSidebar({
         </span>
       </h3>
       <h2 className="text-center text-1xl md:text-2xl font-manrope text-slate-700 font-medium">{word.translation}</h2>
+
+      <h2 className="text-center text-1xl md:text-2xl font-manrope text-slate-700 font-medium">({word.frequency} Occurances)</h2>
+      
     </motion.div>
   );
 }
