@@ -297,7 +297,7 @@ const Quiz = () => {
   if (userWords) {
     if (userWords.length < 5) {
       return (
-        <div className="mt-3 text-2xl">
+        <div className="mt-3 text-2xl text-center">
           Learn 5 words before taking the Quiz
         </div>
       );
