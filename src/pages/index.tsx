@@ -14,6 +14,7 @@ import { toast } from "react-hot-toast";
 import quranIcon from "../../public/quran.png";
 import Image from "next/image";
 
+
 const btn =
   "inline-flex items-center px-3 py-1.5 border border-gray-300 shadow-sm font-medium rounded-full text-gray-700 bg-white hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500";
 
@@ -79,7 +80,6 @@ const WordFeed = () => {
   const [totalFreq, setTotalFreq] = useState(0);
   const totalQuranicWords = 77430;
   const { mutate } = api.learn.learn.useMutation({
-    
     onSuccess: () => {
       if (activeWord) {
         toast.success(`Learnt "${activeWord?.translation}" in Arabic`);
@@ -185,7 +185,7 @@ const WordFeed = () => {
                       })
                     }
                   >
-                    Learn Word
+                    Mark As Learnt
                   </button>
                 )}
 
@@ -203,16 +203,18 @@ const WordFeed = () => {
                       })
                     }
                   >
-                    Unlearn Word
+                    Mark As Unlearnt
                   </button>
                 </div>
               )}
 
               {!user && (
                 <div className="flex flex-col items-center justify-center gap-2">
-                  <span className="inline-flex items-center rounded-full border border-gray-300 bg-rose-400 px-3 py-1.5 font-medium text-slate-800 shadow-sm ">
-                    Sign In to Learn
-                  </span>
+                  <Link href={"/sign-in"}>
+                    <span className="inline-flex items-center rounded-full border border-slate-400 bg-slate-300 hover:bg-rose-400 px-3 py-1.5 font-medium text-slate-800 shadow-sm ">
+                      Sign In to Learn
+                    </span>
+                  </Link>
                 </div>
               )}
             </div>
@@ -390,6 +392,7 @@ const Quiz = () => {
 const Home: NextPage = () => {
   const [opts, setOpts] = useState("vocab");
   const { isLoaded: userLoaded, isSignedIn, user } = useUser();
+  const demo = false;
   api.learn.getAll.useQuery();
   api.learn.userWords.useQuery({ userId: user?.id ?? "" });
 
@@ -454,74 +457,78 @@ const Home: NextPage = () => {
       </div>
 
       {/* options */}
-      <div className="flex flex-col items-center justify-center gap-8 pb-6">
-        <div className="mt-3 flex flex-col items-center justify-center gap-8">
-          <ul className="flex flex-wrap gap-4">
-            <label className="cursor-pointer ">
-              <input
-                type="radio"
-                name="option"
-                value="vocab"
-                className="peer sr-only"
-                onChange={handleQuiz}
-                checked={opts === "vocab"}
-              />
-              <div className="w-30 max-w-xl rounded-md bg-white p-5 text-gray-700 ring-2 ring-gray-200 hover:shadow-md peer-checked:bg-rose-300 peer-checked:ring-rose-500 peer-checked:ring-offset-2">
-                <div className="flex items-center justify-between">
-                  <p className="text-sm font-semibold uppercase">Vocab</p>
+      {!demo && (
+        <div className="flex flex-col items-center justify-center gap-8 pb-6">
+          <div className="mt-3 flex flex-col items-center justify-center gap-8">
+            <ul className="flex flex-wrap gap-4">
+              <label className="cursor-pointer ">
+                <input
+                  type="radio"
+                  name="option"
+                  value="vocab"
+                  className="peer sr-only"
+                  onChange={handleQuiz}
+                  checked={opts === "vocab"}
+                />
+                <div className="w-30 max-w-xl rounded-md bg-white p-5 text-gray-700 ring-2 ring-gray-200 hover:shadow-md peer-checked:bg-rose-300 peer-checked:ring-rose-500 peer-checked:ring-offset-2">
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm font-semibold uppercase">Vocab</p>
+                  </div>
                 </div>
-              </div>
-            </label>
-            <label className="cursor-pointer ">
-              <input
-                type="radio"
-                name="option"
-                value="quiz"
-                className="peer sr-only"
-                onChange={handleQuiz}
-                checked={opts === "quiz"}
-              />
-              <div className="w-30 max-w-xl rounded-md bg-white p-5 text-gray-700 ring-2 ring-gray-200 hover:shadow-md peer-checked:bg-rose-300 peer-checked:ring-rose-500 peer-checked:ring-offset-2">
-                <div className="flex items-center justify-between">
-                  <p className="text-sm font-semibold uppercase text-gray-700">
-                    Quiz
-                  </p>
+              </label>
+              <label className="cursor-pointer ">
+                <input
+                  type="radio"
+                  name="option"
+                  value="quiz"
+                  className="peer sr-only"
+                  onChange={handleQuiz}
+                  checked={opts === "quiz"}
+                />
+                <div className="w-30 max-w-xl rounded-md bg-white p-5 text-gray-700 ring-2 ring-gray-200 hover:shadow-md peer-checked:bg-rose-300 peer-checked:ring-rose-500 peer-checked:ring-offset-2">
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm font-semibold uppercase text-gray-700">
+                      Quiz
+                    </p>
+                  </div>
                 </div>
-              </div>
-            </label>
-            <label className="cursor-pointer ">
-              <input
-                type="radio"
-                name="option"
-                value="apply"
-                className="peer sr-only"
-                onChange={handleQuiz}
-                checked={opts === "apply"}
-              />
-              <div className="w-30 max-w-xl rounded-md bg-white p-5 text-gray-700 ring-2 ring-gray-200 hover:shadow-md peer-checked:bg-rose-300 peer-checked:ring-rose-500 peer-checked:ring-offset-2">
-                <div className="flex items-center justify-between">
-                  <p className="text-sm font-semibold uppercase">Apply</p>
+              </label>
+              <label className="cursor-pointer ">
+                <input
+                  type="radio"
+                  name="option"
+                  value="apply"
+                  className="peer sr-only"
+                  onChange={handleQuiz}
+                  checked={opts === "apply"}
+                />
+                <div className="w-30 max-w-xl rounded-md bg-white p-5 text-gray-700 ring-2 ring-gray-200 hover:shadow-md peer-checked:bg-rose-300 peer-checked:ring-rose-500 peer-checked:ring-offset-2">
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm font-semibold uppercase">Apply</p>
+                  </div>
                 </div>
-              </div>
-            </label>
-          </ul>
+              </label>
+            </ul>
+          </div>
+
+          {opts === "vocab" && <WordFeed />}
+
+          {opts === "quiz" && isSignedIn && <Quiz />}
+          {(opts === "quiz" || opts === "apply") && !isSignedIn && (
+            <div>
+              <span className="font-manrope text-2xl">
+                Sign in to use this feature
+              </span>
+            </div>
+          )}
+
+          {opts === "apply" && (
+            <div>
+              <span className="font-manrope text-2xl">Coming Soon ...</span>
+            </div>
+          )}
         </div>
-
-        {opts === "vocab" && <WordFeed />}
-
-        {opts === "quiz" && isSignedIn && <Quiz />}
-        {(opts === "quiz"||opts==="apply") && !isSignedIn && (
-          <div>
-            <span className="font-manrope text-2xl">Sign in to use this feature</span>
-          </div>
-        )}
-
-        {opts === "apply" && (
-          <div>
-            <span className="font-manrope text-2xl">Coming Soon ...</span>
-          </div>
-        )}
-      </div>
+      )}
     </PageLayout>
   );
 };
