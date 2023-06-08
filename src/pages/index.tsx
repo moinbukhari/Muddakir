@@ -1,11 +1,18 @@
 import { type NextPage } from "next";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import {
+  DragDropContext,
+  Draggable,
+  Droppable,
+  type DropResult,
+  type DraggableProvided,
+} from "react-beautiful-dnd";
 import type { QuranicWord } from "../components/WordCard";
 import WordList from "../components/WordList";
 import WordSidebar from "../components/WordSidebar";
 import Link from "next/link";
-import { SignInButton, useUser, UserButton } from "@clerk/nextjs";
+import { SignInButton, useUser, UserButton} from "@clerk/nextjs";
 import { api } from "~/utils/api";
 import { LoadingPage } from "~/components/loading";
 import { PageLayout } from "~/components/layout";
@@ -15,11 +22,16 @@ import quranIcon from "../../public/quran.png";
 import Image from "next/image";
 
 
+type AWord = {
+  id: string;
+  content: string;
+};
+
 const btn =
   "inline-flex items-center px-3 py-1.5 border border-gray-300 shadow-sm font-medium rounded-full text-gray-700 bg-white hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500";
 
 const opt_button =
-  "flex items-center justify-center p-4 cursor-pointer rounded-md";
+  "flex items-center justify-center p-4 cursor-pointer rounded-md w-32";
 
 function isWordInList(id: number, wordList: QuranicWord[]): boolean {
   for (let i = 0; i < wordList.length; i++) {
@@ -67,6 +79,16 @@ function shuffleWords(a: Word[]): Word[] {
   for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [array[i], array[j]] = [array[j], array[i]] as [Word, Word];
+  }
+  return array;
+}
+
+function shuffleList(a: AWord[]): AWord[] {
+  const array = a.filter((word) => word !== undefined);
+
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]] as [AWord, AWord];
   }
   return array;
 }
@@ -211,7 +233,7 @@ const WordFeed = () => {
               {!user && (
                 <div className="flex flex-col items-center justify-center gap-2">
                   <Link href={"/sign-in"}>
-                    <span className="inline-flex items-center rounded-full border border-slate-400 bg-slate-300 hover:bg-rose-400 px-3 py-1.5 font-medium text-slate-800 shadow-sm ">
+                    <span className="inline-flex items-center rounded-full border border-slate-400 bg-slate-300 px-3 py-1.5 font-medium text-slate-800 shadow-sm hover:bg-rose-400 ">
                       Sign In to Learn
                     </span>
                   </Link>
@@ -229,7 +251,6 @@ const Quiz = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [score, setScore] = useState(0);
   const [currentWord, setCurrentWord] = useState<Word>();
-  const [wrongAnswers, setWrongAnswers] = useState<Word[]>([]);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [currentOptions, setCurrentOptions] = useState<string[]>([]);
   const [randomWords, setRandomWords] = useState<Word[]>([]);
@@ -241,14 +262,7 @@ const Quiz = () => {
   const handleNext = () => {
     if (selectedAnswer === currentWord?.translation) {
       setScore(score + 1);
-    } else {
-      if (currentWord) {
-        setWrongAnswers((prevWrongAnswers) => [
-          ...prevWrongAnswers,
-          currentWord,
-        ]);
-      }
-    }
+    } 
     setCurrentIndex(currentIndex + 1);
     setSelectedAnswer(null);
   };
@@ -297,7 +311,7 @@ const Quiz = () => {
   if (userWords) {
     if (userWords.length < 5) {
       return (
-        <div className="mt-3 text-2xl text-center">
+        <div className="mt-3 text-center text-2xl">
           Learn 5 words before taking the Quiz
         </div>
       );
@@ -353,7 +367,7 @@ const Quiz = () => {
       </div>
 
       <div className="mt-4 flex flex-col items-center justify-center gap-4">
-        <ul className="items grid grid-cols-2 gap-4 text-center ">
+        <ul className="items grid grid-cols-2 gap-4 text-center">
           {currentOptions.map((option) => (
             <li
               key={option}
@@ -389,6 +403,381 @@ const Quiz = () => {
   );
 };
 
+const Apply = () => {
+  const [answeredCorr, setAnswerCorr] = useState(false);
+  const [currVerse, setCurrVerse] = useState(0);
+  const verses = [
+    {
+      arabic: ["بِسْمِ", "ٱللَّهِ", "ٱلرَّحْمَـٰنِ","ٱلرَّحِيمِ"],
+      english: [
+        { id: "0", content: "In the Name" },
+        { id: "1", content: "(of) Allah" },
+        { id: "2", content: "the most compassionate" },
+        { id: "3", content: "the most merciful" },
+      ],
+    },
+    {
+      arabic: ["ٱلْحَمْدُ", "لِلَّهِ", "رَبِّ","ٱلْعَـٰلَمِينَ"],
+      english: [
+        { id: "0", content: "(All) Praise and gratitude" },
+        { id: "1", content: "is for Allah" },
+        { id: "2", content: "(the) Lord" },
+        { id: "3", content: "of the Worlds" },
+      ],
+    },
+    {
+      arabic: ["ٱلرَّحْمَـٰنِ", "ٱلرَّحِيمِ"],
+      english: [
+        { id: "0", content: "the most compassionate" },
+        { id: "1", content: "the most merciful" },
+      ],
+    },
+    {
+      arabic:  ["مَـٰلِكِ", "يَوْمِ" , "ٱلدِّينِ"],
+      english: [
+        { id: "0", content: "Master" },
+        { id: "1", content: "of the Day" },
+        { id: "2", content: "of Judgement" },
+      ],
+    },
+    {
+      arabic: ["إِيَّاكَ","نَعْبُدُ","وَ","إِيَّاكَ","نَسْتَعِينُ"],
+      english: [
+        { id: "0", content: "You alone" },
+        { id: "1", content: "we worship" },
+        { id: "2", content: "and" },
+        { id: "3", content: "You alone" },
+        { id: "4", content: "we ask for help" },
+      ],
+    },
+    {
+      arabic: ["ٱهْدِنَا", "ٱلصِّرَٰطَ", "ٱلْمُسْتَقِيمَ"],
+      english: [
+        { id: "0", content: "Guide us" },
+        { id: "2", content: "(to) the straight" },
+        { id: "1", content: "path" },
+      ],
+    },
+    {
+      arabic: ["صِرَٰطَ", "ٱلَّذِينَ", "أَنْعَمْتَ عَلَيْهِمْ", "غَيْرِ", "ٱلْمَغْضُوبِ عَلَيْهِمْ","وَ", "لَا","ٱلضَّآلِّينَ"],
+      english: [
+        { id: "0", content: "(the) Path" },
+        { id: "1", content: "of the ones who" },
+        { id: "2", content: "you have blessed" },
+        { id: "3", content: "not (of)" },
+        { id: "4", content: "those you are disappointed with" },
+        { id: "5", content: "and" },
+        { id: "6", content: "not" },
+        { id: "7", content: "those who have gone astray" },
+      ],
+    },
+  ];
+
+
+  const words = verses[currVerse]?.arabic;
+
+  const items = verses[currVerse]?.english;
+
+
+  const questions = shuffleList(items ?? []);
+  const answers = [] as AWord[];
+  const [questionRow, setQuestionRow] = useState(questions);
+  const [answerRow, setAnswerRow] = useState(answers);
+
+  const [winReady, setwinReady] = useState(false);
+  useEffect(() => {
+    setwinReady(true);
+  }, []);
+  useEffect(() => {
+    const sentence = verses[currVerse]?.english;
+    if (sentence) {
+
+      setQuestionRow(sentence.sort(() => Math.random() - 0.5));
+      setAnswerRow([] as AWord[]);
+    
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currVerse]);
+
+
+  function handleDragEnd(result: DropResult) {
+    if (!result.destination) return;
+
+    const { source, destination } = result;
+
+    if (
+      (source.droppableId === "Answer" || source.droppableId === "Question") &&
+      (destination.droppableId === "Answer" ||
+        destination.droppableId === "Question")
+    ) {
+      if (source.droppableId !== destination.droppableId) {
+        if(source.droppableId==="Question"){
+          const sourceRow = [...questionRow];
+          const destRow = [...answerRow];
+
+          const [removed] = sourceRow.splice(source.index, 1);
+          if (removed) {
+            destRow.splice(destination.index, 0, removed);
+          }
+          setQuestionRow(sourceRow);
+          setAnswerRow(destRow);
+
+        } else{
+          const sourceRow = [...answerRow];
+          const destRow =  [...questionRow];
+
+          const [removed] = sourceRow.splice(source.index, 1);
+          if (removed) {
+            destRow.splice(destination.index, 0, removed);
+          }
+          setQuestionRow(destRow);
+          setAnswerRow(sourceRow);
+
+        }
+       
+      } else {
+        if(source.droppableId==="Question"){
+          const copiedRow = [...questionRow];
+          const [removed] = copiedRow.splice(source.index, 1);
+          if (removed) {
+            copiedRow.splice(destination.index, 0, removed);
+          }
+          setQuestionRow(copiedRow);
+
+        } else{
+          const copiedRow = [...answerRow];
+          const [removed] = copiedRow.splice(source.index, 1);
+          if (removed) {
+            copiedRow.splice(destination.index, 0, removed);
+          }
+          setAnswerRow(copiedRow);
+        }
+
+      }
+    }
+  }
+
+  function handleItemClick(currentPosition: string, index: number) {
+    if(currentPosition === "Question"){
+      const sourceRow = [...questionRow];
+      const destRow = [...answerRow];
+
+      const [removed] = sourceRow.splice(index, 1);
+      if (removed) {
+        destRow.push(removed);
+      }
+      setQuestionRow(sourceRow);
+      setAnswerRow(destRow);
+    }
+    else if (currentPosition === "Answer"){
+      const sourceRow = [...answerRow];
+      const destRow = [...questionRow];
+
+      const [removed] = sourceRow.splice(index, 1);
+      if (removed) {
+        destRow.push(removed);
+      }
+      setQuestionRow(destRow);
+      setAnswerRow(sourceRow);
+    }
+  }
+
+  function handleCheck() {
+    const res = answerRow.map((item) => item.content).join(" ");
+    const answer = verses[currVerse]?.english
+      .reduce((acc, curr) => {
+        return acc + " " + curr.content;
+      }, "")
+      .trim();
+
+    console.log("sentence is ", answer);
+    console.log("res ", res);
+
+    if (res === answer) {
+      toast.success(`Correct🎉`);
+      setAnswerCorr(true);
+    } else {
+      toast.error("Incorrect. Try Again");
+    }
+  }
+
+  function handleNext() {
+    setAnswerCorr(false);
+    setCurrVerse(currVerse + 1);
+  }
+
+  function Option({
+    item,
+    provided,
+  }: {
+    item: AWord;
+    provided: DraggableProvided;
+  }) {
+    return (
+      <div
+        ref={provided.innerRef}
+        {...provided.draggableProps}
+        {...provided.dragHandleProps}
+        className="h-10 w-fit rounded-lg bg-rose-100 px-4 py-2 shadow-lg inline-block"
+        style={{
+          userSelect: "none",
+          ...provided.draggableProps.style,
+        }}
+      >
+
+        {item.content}
+      </div>
+    );
+  }
+  if(currVerse === verses.length){
+
+    return (
+      <div className="flex flex-col text-center gap-3 rounded-lg bg-white px-5 pb-10 pt-5 shadow-md ring ring-transparent hover:ring-rose-300 w-5/6 lg:w-4/6">
+        <p className="text-2xl"> Congratulations you can now understand the meaning of Surah Fatihah.</p>
+        <p className="text-2xl"> This surah is recited a minimum of 17 times each day, just in the obligatory prayers.</p>
+
+
+      </div>
+    );
+
+  }
+  return (
+    <div className="flex w-full flex-col items-center gap-8 ">
+      <div className="flex flex-col gap-1 rounded-lg bg-white px-5 pb-10  pt-5 shadow-md ring ring-transparent hover:ring-rose-300 h-fit w-5/6 md:w-5/6 lg:w-4/6">
+        <div className="flex flex-col flex-wrap items-center gap-8">
+          <p className="mt-7 flex flex-row-reverse flex-wrap justify-center font-manrope text-3xl md:text-6xl leading-8 text-gray-600 sm:text-center">
+          {items && words?.map((word, index) => {
+            const itemId = items[index]?.id ?? -1;
+            const answerLength = answerRow.length.toString() ?? "-1";
+            console.log(answerLength);
+            let className = "text-gray-300";
+            if ((answerLength==="-1" && index === 0) || itemId === answerLength) {
+              className = "text-rose-400";
+            } else if (itemId < answerLength) {
+              className = "text-gray-600";
+            }
+            
+            return (
+              <span key={index} className={`${className} pb-3 md:pb-16`}>
+                {word}&nbsp;
+              </span>
+            );
+          })}
+            <span className="text-lg md:text-4xl pt-1 md:pt-3">{`(${String.fromCharCode(
+              1632 + currVerse + 1
+            )})`}</span>
+          </p>
+        </div>
+        <DragDropContext onDragEnd={(result) => handleDragEnd(result)}>
+          <div className="w-full ">
+            <div className="mt-5">
+              {winReady ? (<Droppable droppableId="Answer" direction="horizontal">
+                  {(provided) => {
+                    return (
+                      <div
+                        className="flex w-full flex-wrap gap-2 items-center mb-2 py-4 border-2 border-dotted"
+                        ref={provided.innerRef}
+                        {...provided.droppableProps}
+                      >
+                        {answerRow.map((item, index) => {
+                          
+                          return (
+                            <Draggable
+                              key={item.id}
+                              draggableId={item.id}
+                              index={index}
+                              
+                            >
+                              {(provided) => {
+                                return (
+                                  <div onClick={() => handleItemClick("Answer", index )}>
+                                    <Option  item={item} provided={provided} />
+                                  </div>
+                                );
+                              }}
+                            </Draggable>
+                          );
+                        })}
+                        {provided.placeholder}
+                      </div>
+                    );
+                  }}
+                </Droppable>) : null}
+                
+
+              <hr className=" border-gray-300" />
+              {/* <hr className=" border-gray-300" />
+              <br />
+              <hr className="mt-5 border-gray-300" /> */}
+            </div>
+            {(winReady && questionRow.length!=0) ? (
+              <Droppable droppableId="Question" direction="horizontal">
+                {(provided) => {
+                  return (
+                    <div
+                      className="mt-10 flex flex-wrap items-center gap-2"
+                      ref={provided.innerRef}
+                      {...provided.droppableProps}
+                    >
+                      {questionRow.map((item, index) => {
+                        return (
+                          <Draggable
+                            key={item.id}
+                            draggableId={item.id}
+                            index={index}
+                          >
+                            {(provided) => {
+                              return <div onClick={() => handleItemClick("Question", index )}>
+                              <Option  item={item} provided={provided} />
+                            </div>;
+                            }}
+                          </Draggable>
+                        );
+                      })}
+                      {provided.placeholder}
+                    </div>
+                  );
+                }}
+              </Droppable>
+            ) : null}
+          </div>
+        </DragDropContext>
+
+        {answerRow.length === words?.length && (
+        <div className="mt-10 flex justify-center md:mt-5">
+          {!answeredCorr && (
+            <button
+              onClick={() => handleCheck()}
+              className="rounded-lg bg-green-500 px-6 py-2 text-lg font-medium text-white shadow-lg  transition-all hover:bg-green-600 "
+            >
+              Check
+            </button>
+          )}
+          {answeredCorr && (
+            <button
+              onClick={() => handleNext()}
+              className="rounded-lg bg-green-500 px-6 py-2 text-lg font-medium text-white shadow-lg  transition-all hover:bg-green-600 "
+            >
+              Next
+            </button>
+          )}
+                      
+        </div>                        
+      )}
+      </div>
+      
+      {/* {!answeredCorr && (
+            <button
+              onClick={() => handleNext()}
+              className="rounded-lg bg-[#58cc02] px-10 py-2 text-lg font-medium text-white shadow-lg  transition-all hover:bg-[#448d0d] "
+            >
+              Next
+            </button>
+          )} */}
+    </div>
+  );
+};
+
 const Home: NextPage = () => {
   const [opts, setOpts] = useState("vocab");
   const { isLoaded: userLoaded, isSignedIn, user } = useUser();
@@ -399,11 +788,6 @@ const Home: NextPage = () => {
   if (!userLoaded) {
     return <LoadingPage />;
   }
-  // const firstCuisine = api.learn.hasUserLearnt.useQuery({
-  //   userId: "user_2OsognTRdyKnF8fkuX2kXzHyU6r",
-  //   wordId: activeWord.id,
-  // });
-  // console.log(firstCuisine.data);
 
   const handleQuiz = (e: React.ChangeEvent<HTMLInputElement>) => {
     setOpts(e.target.value);
@@ -514,7 +898,7 @@ const Home: NextPage = () => {
           {opts === "vocab" && <WordFeed />}
 
           {opts === "quiz" && isSignedIn && <Quiz />}
-          {(opts === "quiz" || opts === "apply") && !isSignedIn && (
+          {opts === "quiz"  && !isSignedIn && (
             <div>
               <span className="font-manrope text-2xl">
                 Sign in to use this feature
@@ -522,11 +906,7 @@ const Home: NextPage = () => {
             </div>
           )}
 
-          {opts === "apply" && (
-            <div>
-              <span className="font-manrope text-2xl">Coming Soon ...</span>
-            </div>
-          )}
+          {opts === "apply" && <Apply />}
         </div>
       )}
     </PageLayout>
