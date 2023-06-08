@@ -607,6 +607,12 @@ const Apply = () => {
     setCurrVerse(currVerse + 1);
   }
 
+  function goBackToOpts() {
+    setAnswerCorr(false);
+    setCurrVerse(0);
+    setChooseSurah(true)
+  }
+
   function Option({
     item,
     provided,
@@ -648,10 +654,12 @@ const Apply = () => {
   if(currVerse === verses.length){
 
     return (
-      <div className="flex flex-col text-center gap-3 rounded-lg bg-white px-5 pb-10 pt-5 shadow-md ring ring-transparent hover:ring-rose-300 w-5/6 lg:w-4/6">
-        <p className="text-2xl"> Congratulations you can now understand the meaning of Surah Fatihah.</p>
-        <p className="text-2xl"> This surah is recited a minimum of 17 times each day, just in the obligatory prayers.</p>
-
+      <div className="flex flex-col text-center items-center gap-3 rounded-lg bg-white px-5 pb-10 pt-5 shadow-md ring ring-transparent hover:ring-rose-300 w-5/6 lg:w-4/6">
+        <p className="text-2xl"> Congratulations you can now understand the meaning of Surah Al-Fatihah.</p>
+        <p className="text-2xl"> This Surah is recited a minimum of 17 times each day, just in the obligatory prayers.</p>
+        <button className="btn-custom mt-5" onClick={() => goBackToOpts()}>
+          Done
+        </button>
 
       </div>
     );

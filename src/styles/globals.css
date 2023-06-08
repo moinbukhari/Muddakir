@@ -4,7 +4,7 @@
 
 
 .btn-custom {
-    @apply inline-block rounded-lg bg-violet-400 px-4 py-1.5 text-base font-semibold leading-7 text-white shadow-sm ring-1 ring-violet-500 hover:bg-violet-500 hover:ring-violet-600;
+    @apply inline-block rounded-lg bg-emerald-400 px-4 py-1.5 text-base font-semibold leading-7 text-white shadow-sm ring-1 ring-emerald-500 hover:bg-emerald-500 hover:ring-emerald-600;
 }
 
 .btn-gray{
