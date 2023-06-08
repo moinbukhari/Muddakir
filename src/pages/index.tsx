@@ -405,6 +405,7 @@ const Quiz = () => {
 
 const Apply = () => {
   const [answeredCorr, setAnswerCorr] = useState(false);
+  const [chooseSurah, setChooseSurah] = useState(true);
   const [currVerse, setCurrVerse] = useState(0);
   const verses = [
     {
@@ -629,6 +630,21 @@ const Apply = () => {
       </div>
     );
   }
+
+  if(chooseSurah){
+    return(
+      <div className="flex flex-col w-full items-center gap-4">
+      <p className="text-3xl font-manrope font-extrabold text-center p-3">Translate passages from The Quran</p>
+      <div className="flex flex-col items-center gap-1 w-full">
+        <button onClick={() => setChooseSurah(false)} className="text-center text-2xl font-manrope font-semibold rounded-lg bg-white px-5 py-5 shadow-md ring ring-transparent hover:ring-rose-300 h-fit w-5/6 md:w-4/6 lg:w-3/6">
+        Surah Al-Fatihah
+        </button>
+      </div>
+
+      </div>
+      
+    )
+  }
   if(currVerse === verses.length){
 
     return (
@@ -644,7 +660,8 @@ const Apply = () => {
   return (
     <div className="flex w-full flex-col items-center gap-8 ">
       <div className="flex flex-col gap-1 rounded-lg bg-white px-5 pb-10  pt-5 shadow-md ring ring-transparent hover:ring-rose-300 h-fit w-5/6 md:w-5/6 lg:w-4/6">
-        <div className="flex flex-col flex-wrap items-center gap-8">
+        <p className="font-manrope text-gray-600 font-bold text-xl md:text-4xl md:pb-5 text-center">Surah Al-Fatihah</p>
+        <div className="flex flex-col flex-wrap items-center gap-8">  
           <p className="mt-7 flex flex-row-reverse flex-wrap justify-center font-noton text-3xl md:text-6xl leading-8 text-gray-600 sm:text-center">
           {items && words?.map((word, index) => {
             const itemId = items[index]?.id ?? -1;
@@ -658,7 +675,7 @@ const Apply = () => {
             }
             
             return (
-              <span key={index} className={`${className} pb-3 md:pb-16`}>
+              <span key={index} className={`${className} pb-3 md:pb-8`}>
                 {word}&nbsp;
               </span>
             );
@@ -670,7 +687,7 @@ const Apply = () => {
         </div>
         <DragDropContext onDragEnd={(result) => handleDragEnd(result)}>
           <div className="w-full ">
-            <div className="mt-5">
+            <div className="">
               {winReady ? (<Droppable droppableId="Answer" direction="horizontal">
                   {(provided) => {
                     return (
