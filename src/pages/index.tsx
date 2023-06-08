@@ -645,7 +645,7 @@ const Apply = () => {
     <div className="flex w-full flex-col items-center gap-8 ">
       <div className="flex flex-col gap-1 rounded-lg bg-white px-5 pb-10  pt-5 shadow-md ring ring-transparent hover:ring-rose-300 h-fit w-5/6 md:w-5/6 lg:w-4/6">
         <div className="flex flex-col flex-wrap items-center gap-8">
-          <p className="mt-7 flex flex-row-reverse flex-wrap justify-center font-manrope text-3xl md:text-6xl leading-8 text-gray-600 sm:text-center">
+          <p className="mt-7 flex flex-row-reverse flex-wrap justify-center font-noton text-3xl md:text-6xl leading-8 text-gray-600 sm:text-center">
           {items && words?.map((word, index) => {
             const itemId = items[index]?.id ?? -1;
             const answerLength = answerRow.length.toString() ?? "-1";
