@@ -67,7 +67,7 @@ const MyApp: AppType = ({ Component, pageProps }) => {
         />
         <meta
           name="keywords"
-          content="Quran, Quranic vocabulary, Next.js, learn Quran, Islamic studies, translation, essential words, language learning, study Quran"
+          content="Quran, Quranic vocabulary, learn Quran, Islamic studies, translation, essential words, language learning, study Quran"
         />
         <meta
           property="og:title"
