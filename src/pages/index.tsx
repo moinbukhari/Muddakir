@@ -823,7 +823,7 @@ const Home: NextPage = () => {
   api.learn.getAll.useQuery();
   api.learn.userWords.useQuery({ userId: user?.id ?? "" });
 
-  if (!userLoaded) {
+  if (!userLoaded && !landingPage) {
     return <LoadingPage />;
   }
 
