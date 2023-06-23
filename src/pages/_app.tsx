@@ -59,8 +59,32 @@ const MyApp: AppType = ({ Component, pageProps }) => {
   return (
     <ClerkProvider {...pageProps}>
       <Head>
-        <title>Muddakir</title>
-        <meta name="description" content="created by Moin" />
+        <meta httpEquiv="Content-Type" content="text/html charset=utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta
+          name="description"
+          content="Master the most common Quranic words, enhance your memory with tailored tests, and effortlessly translate passages of the Quran."
+        />
+        <meta
+          name="keywords"
+          content="Quran, Quranic vocabulary, Next.js, learn Quran, Islamic studies, translation, essential words, language learning, study Quran"
+        />
+        <meta
+          property="og:title"
+          content="Muddakir: Helping non-arabic speakers understand the Quran"
+          key="title"
+        />
+        <meta
+          property="og:description"
+          content="Learn the most frequent words, improve retention with effective quizzes, and confidently translate Quranic passages"
+          key="description"
+        />
+        <meta property="og:image" content="/favicon.ico" />
+        <meta name="author" content="Moin Bukhari" />
+
+        <title>
+          Muddakir: Helping Non-Arabic Speakers Understand The Quran
+        </title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
