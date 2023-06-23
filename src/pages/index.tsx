@@ -833,6 +833,7 @@ const Home: NextPage = () => {
 
   const handleLanding = () => {
     setLandingPage(false);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleHomePage = () => {
@@ -966,7 +967,7 @@ const Home: NextPage = () => {
             {/* <div className="flex flex-col gap-8 rounded-lg  bg-white p-5
       shadow-md ring ring-transparent hover:ring-rose-300"></div> */}
 
-            <h1 className="text-center text-6xl font-extrabold leading-[1.1] text-slate-900 sm:text-7xl sm:leading-[1.1] md:text-7xl md:leading-[1.2]">
+            <h1 className="text-center text-4xl font-extrabold leading-[1.1] text-slate-900 sm:text-7xl sm:leading-[1.1] md:text-7xl md:leading-[1.2]">
               Helping <span className="inline-block">Non-Arabic</span> Speakers
               Understand&nbsp;
               <span className="inline-block bg-gradient-to-r from-rose-500 to-rose-600 bg-clip-text text-transparent">
@@ -975,12 +976,12 @@ const Home: NextPage = () => {
             </h1>
 
             <div className="flex flex-col flex-wrap items-center gap-8">
-              <div className="flex flex-col items-center gap-4 text-center font-semibold">
-                <p className="text-2xl leading-8 text-gray-600">
+              <div className="flex flex-col items-center gap-4 text-center font-semibold font-manrope">
+                <p className="text-xl leading-8 sm:text-2xl sm:leading-8 text-gray-600">
                   Learn the most frequent words, improve retention with effective quizzes, and confidently translate Quranic passages
                 </p>
 
-                <p className="text-2xl leading-8 text-gray-600 ">
+                <p className="text-xl leading-8 sm:text-2xl sm:leading-8 text-gray-600 ">
                   All to make those future recitations more meaningful
                 </p>
               </div>
