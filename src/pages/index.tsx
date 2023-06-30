@@ -1,6 +1,7 @@
 import { type NextPage } from "next";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import vocabModal from "../../assets/vocab.gif";
 import {
   DragDropContext,
   Draggable,
@@ -8,6 +9,27 @@ import {
   type DropResult,
   type DraggableProvided,
 } from "react-beautiful-dnd";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "../components/ui/dialog";
+
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "../components/ui/tabs";
+
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "../components/ui/popover";
+
 import type { QuranicWord } from "../components/WordCard";
 import WordList from "../components/WordList";
 import WordSidebar from "../components/WordSidebar";
@@ -159,7 +181,11 @@ const WordFeed = () => {
           {((totalFreq * 100) / totalQuranicWords).toFixed(1)}% of
         </span>
 
-        <Image src={quranIcon} width={32} height={32} alt="" />
+        <Popover>
+          <PopoverTrigger><Image src={quranIcon} width={32} height={32} alt="" /></PopoverTrigger>
+          <PopoverContent>You have learnt <span className="font-semibold">{userWords ? userWords.length : 0}</span> words. These words make up about <span className="font-semibold">{((totalFreq * 100) / totalQuranicWords).toFixed(1)}%</span> of all the words in the Quran  </PopoverContent>
+        </Popover>
+
         {/* <span className="text-center font-manrope font-semibold">
           {((data.reduce((accum, cur) => accum + cur.frequency, 0)*100)/totalQuranicWords).toFixed(1)}%
         </span> */}
@@ -169,8 +195,8 @@ const WordFeed = () => {
         key={activeWord?.id}
         className={
           activeWord
-            ? "item-center hidden max-w-screen-md lg:flex lg:-translate-x-1/4 2xl:max-w-screen-lg"
-            : "item-center flex max-w-screen-md 2xl:max-w-screen-lg"
+            ? "item-center hidden max-w-screen-md lg:flex lg:-translate-x-1/4 2xl:max-w-screen-lg "
+            : "item-center mx-8 flex max-w-screen-md 2xl:max-w-screen-lg"
         }
       >
         <WordList
@@ -248,6 +274,7 @@ const Quiz = () => {
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [currentOptions, setCurrentOptions] = useState<string[]>([]);
   const [randomWords, setRandomWords] = useState<Word[]>([]);
+
   const { user } = useUser();
   const userId = user?.id;
   const { data: userWords, isLoading: wordsLoading } =
@@ -289,12 +316,6 @@ const Quiz = () => {
     }
   }, [currentIndex, randomWords]);
 
-  // useEffect(() => {
-  //   if (currentWord) {
-  //     const wrongAnswers = getRandomIncorrectAnswers(userWords, currentWord);
-  //   }
-  // }, [userWords, currentWord]);
-
   if (wordsLoading)
     return (
       <div className="flex grow">
@@ -323,7 +344,7 @@ const Quiz = () => {
     }
   }
 
-  if (!userWords || !currentWord) {
+  if (!userWords && !currentWord) {
     return (
       <div className="flex grow">
         <LoadingPage />
@@ -354,7 +375,7 @@ const Quiz = () => {
               transition={{ duration: 0.8 }}
               className="w-full text-center"
             >
-              {currentWord.arabic}
+              {currentWord?.arabic}
             </motion.div>
           </AnimatePresence>
         </div>
@@ -368,7 +389,187 @@ const Quiz = () => {
               onClick={() => handleAnswer(option)}
               className={
                 !!selectedAnswer
-                  ? option === currentWord.translation
+                  ? option === currentWord?.translation
+                    ? `${opt_button} bg-emerald-300   ${
+                        selectedAnswer === option
+                          ? "shadow-md ring-4 ring-emerald-600"
+                          : ""
+                      }`
+                    : `${opt_button}   ${
+                        selectedAnswer === option
+                          ? "bg-red-300 shadow-md ring-4 ring-red-600"
+                          : "bg-red-400"
+                      } `
+                  : `${opt_button} bg-indigo-200 ring-2 ring-indigo-500 hover:bg-indigo-300 hover:shadow-md `
+              }
+            >
+              {option}
+            </li>
+          ))}
+        </ul>
+
+        {!!selectedAnswer && (
+          <button className="btn-gray" onClick={() => handleNext()}>
+            {`${currentIndex + 1 < randomWords.length ? "Next" : "Done"}`}
+          </button>
+        )}
+      </div>
+    </div>
+  );
+};
+
+const MockQuiz = () => {
+  const unSignedInWords = [
+    {
+      id: 1,
+      arabic: "مِن",
+      transliteration: "min",
+      translation: "from",
+      frequency: 3226,
+      wordType: "Preposition",
+    },
+    {
+      id: 20,
+      arabic: "قَوْم",
+      transliteration: "qawm",
+      translation: "people",
+      frequency: 383,
+      wordType: "Noun",
+    },
+    {
+      id: 28,
+      arabic: "يَوْم",
+      transliteration: "yawm",
+      translation: "day",
+      frequency: 325,
+      wordType: "Noun",
+    },
+    {
+      id: 41,
+      arabic: "قَبْل",
+      transliteration: "qabl",
+      translation: "before",
+      frequency: 197,
+      wordType: "Noun",
+    },
+    {
+      id: 17,
+      arabic: "أَرْض",
+      transliteration: "ard",
+      translation: "earth",
+      frequency: 461,
+      wordType: "Noun",
+    },
+    {
+      id: 19,
+      arabic: "إِذَا",
+      transliteration: "itha",
+      translation: "when",
+      frequency: 405,
+      wordType: "Time adverb",
+    },
+  ] as Word[];
+
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [score, setScore] = useState(0);
+  const [currentWord, setCurrentWord] = useState<Word>();
+  const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
+  const [currentOptions, setCurrentOptions] = useState<string[]>([]);
+  const [randomWords, setRandomWords] = useState<Word[]>(unSignedInWords);
+
+  const handleNext = () => {
+    if (selectedAnswer === currentWord?.translation) {
+      setScore(score + 1);
+    }
+    setCurrentIndex(currentIndex + 1);
+    setSelectedAnswer(null);
+  };
+
+  const handleAnswer = (answer: string) => {
+    setSelectedAnswer(answer);
+  };
+
+  useEffect(() => {
+    if (currentWord) {
+      const wrongAnswers = getRandomIncorrectAnswers(randomWords, currentWord);
+      const opts = shuffle([...wrongAnswers, currentWord.translation]);
+      setCurrentOptions(opts);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentWord]);
+
+  useEffect(() => {
+    if (currentIndex === 0) {
+      const randUserWords = getRandomWordList(randomWords);
+      setRandomWords(randUserWords);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentIndex]);
+
+  useEffect(() => {
+    if (randomWords.length > 0 && currentIndex < randomWords.length) {
+      setCurrentWord(randomWords[currentIndex]);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentIndex]);
+
+  if (currentIndex === 5) {
+    return (
+      <div className="mt-14 flex flex-col items-center justify-center gap-5 text-center font-manrope">
+        <h1 className="text-4xl">Quiz Complete!</h1>
+        <p className="text-2xl">
+          Your score was {score} out of {5}
+        </p>
+
+        <div className="flex flex-col items-center justify-center gap-2">
+          <Link href={"/sign-in"}>
+            <span className="btn-custom2">
+              Sign In to Get Personalised Quizzes
+            </span>
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col items-center justify-center gap-1 rounded">
+      <div className="relative col-span-2 h-3 w-64 overflow-hidden rounded-full bg-slate-300">
+        <motion.div
+          className="absolute inset-0 bg-slate-800"
+          style={{ originX: "left" }}
+          animate={{ scaleX: currentIndex / 5 }}
+          initial={{ scaleX: 0 }}
+          transition={{ type: "spring", bounce: 0 }}
+        />
+      </div>
+
+      <div className="flex h-64 w-64 items-center justify-center rounded border border-slate-500 bg-slate-300 px-8 py-10">
+        <div className="relative mt-1 flex h-full w-full items-center overflow-hidden text-center font-noton text-7xl ">
+          <AnimatePresence mode="popLayout">
+            <motion.div
+              key={currentIndex}
+              initial={{ x: -300 }}
+              animate={{ x: 0 }}
+              exit={{ x: 300 }}
+              transition={{ duration: 0.8 }}
+              className="w-full text-center"
+            >
+              {currentWord?.arabic}
+            </motion.div>
+          </AnimatePresence>
+        </div>
+      </div>
+
+      <div className="mt-4 flex flex-col items-center justify-center gap-4">
+        <ul className="items grid grid-cols-2 gap-4 text-center">
+          {currentOptions.map((option) => (
+            <li
+              key={option}
+              onClick={() => handleAnswer(option)}
+              className={
+                !!selectedAnswer
+                  ? option === currentWord?.translation
                     ? `${opt_button} bg-emerald-300   ${
                         selectedAnswer === option
                           ? "shadow-md ring-4 ring-emerald-600"
@@ -820,8 +1021,15 @@ const Home: NextPage = () => {
   const [opts, setOpts] = useState("vocab");
   const { isLoaded: userLoaded, isSignedIn, user } = useUser();
   const [landingPage, setLandingPage] = useState(true);
+
   api.learn.getAll.useQuery();
   api.learn.userWords.useQuery({ userId: user?.id ?? "" });
+
+  useEffect(() => {
+    if (isSignedIn) {
+      setLandingPage(false);
+    }
+  }, [isSignedIn]);
 
   if (!userLoaded && !landingPage) {
     return <LoadingPage />;
@@ -833,7 +1041,7 @@ const Home: NextPage = () => {
 
   const handleLanding = () => {
     setLandingPage(false);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handleHomePage = () => {
@@ -945,17 +1153,55 @@ const Home: NextPage = () => {
               </label>
             </ul>
           </div>
+          <Dialog defaultOpen={true}>
+            <DialogContent>
+              <DialogHeader>
+                <Tabs
+                  defaultValue="vocab"
+                  className="flex flex-col items-center justify-center gap-5"
+                >
+                  <TabsList>
+                    <TabsTrigger value="vocab">Vocab</TabsTrigger>
+                    <TabsTrigger value="quiz">Quiz</TabsTrigger>
+                    <TabsTrigger value="apply">Apply</TabsTrigger>
+                  </TabsList>
+                  <TabsContent value="vocab">
+                    The Vocab section is the place for you to learn the most
+                    frequently occuring words in the Quran. The words are
+                    arranged in descending order of frequency. Mark the words
+                    you think you have learnt and you will be tested on those in
+                    the Quiz.
+                    <Image
+                      src={vocabModal}
+                      width={512}
+                      height={512}
+                      alt={"vocab demo"}
+                      className="mt-5"
+                    />
+                  </TabsContent>
+                  <TabsContent value="quiz">
+                    The Quiz section tests you on a portion of the words that
+                    you have marked as learnt.
+                  </TabsContent>
+                  <TabsContent value="apply">
+                    The Apply section allows you to actively transalte passages
+                    of the Quran ayah by ayah. This will include words you have
+                    learnt as well as new words/phrases.
+                  </TabsContent>
+                </Tabs>
+                {/* <DialogTitle>Are you sure absolutely sure?</DialogTitle>
+                <DialogDescription>
+                  This action cannot be undone. This will permanently delete
+                  your account and remove your data from our servers.
+                </DialogDescription> */}
+              </DialogHeader>
+            </DialogContent>
+          </Dialog>
 
           {opts === "vocab" && <WordFeed />}
 
           {opts === "quiz" && isSignedIn && <Quiz />}
-          {opts === "quiz" && !isSignedIn && (
-            <div>
-              <span className="font-manrope text-2xl">
-                Sign in to use this feature
-              </span>
-            </div>
-          )}
+          {opts === "quiz" && !isSignedIn && <MockQuiz />}
 
           {opts === "apply" && <Apply />}
         </div>
@@ -976,12 +1222,13 @@ const Home: NextPage = () => {
             </h1>
 
             <div className="flex flex-col flex-wrap items-center gap-8">
-              <div className="flex flex-col items-center gap-4 text-center font-semibold font-manrope">
-                <p className="text-xl leading-8 sm:text-2xl sm:leading-8 text-gray-600">
-                  Learn the most frequent words, improve retention with effective quizzes, and confidently translate Quranic passages
+              <div className="flex flex-col items-center gap-4 text-center font-manrope font-semibold sm:gap-8">
+                <p className="text-xl leading-8 text-gray-600 sm:text-2xl sm:leading-8">
+                  Learn the most frequent words, improve retention with
+                  effective quizzes, and confidently translate Quranic passages
                 </p>
 
-                <p className="text-xl leading-8 sm:text-2xl sm:leading-8 text-gray-600 ">
+                <p className="text-xl leading-8 text-gray-600 sm:text-2xl sm:leading-8 ">
                   All to make those future recitations more meaningful
                 </p>
               </div>
