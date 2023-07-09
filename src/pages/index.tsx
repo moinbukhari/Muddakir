@@ -42,6 +42,7 @@ import type { Word } from "@prisma/client";
 import { toast } from "react-hot-toast";
 import quranIcon from "../../public/quran.png";
 import Image from "next/image";
+import { type Surah, type Verse, surahFatiha, surahNas, surahFalaq, surahIkhlas} from "~/utils/surahs";
 
 type AWord = {
   id: string;
@@ -600,83 +601,10 @@ const MockQuiz = () => {
 
 const Apply = () => {
   const [answeredCorr, setAnswerCorr] = useState(false);
-  const [chooseSurah, setChooseSurah] = useState(true);
+  const [surahMenu, setSurahMenu] = useState(true);
   const [currVerse, setCurrVerse] = useState(0);
-  const verses = [
-    {
-      arabic: ["بِسْمِ", "ٱللَّهِ", "ٱلرَّحْمَـٰنِ", "ٱلرَّحِيمِ"],
-      english: [
-        { id: "0", content: "In the Name" },
-        { id: "1", content: "(of) Allah" },
-        { id: "2", content: "the most compassionate" },
-        { id: "3", content: "the most merciful" },
-      ],
-    },
-    {
-      arabic: ["ٱلْحَمْدُ", "لِلَّهِ", "رَبِّ", "ٱلْعَـٰلَمِينَ"],
-      english: [
-        { id: "0", content: "(All) Praise and gratitude" },
-        { id: "1", content: "is for Allah" },
-        { id: "2", content: "(the) Lord" },
-        { id: "3", content: "of the Worlds" },
-      ],
-    },
-    {
-      arabic: ["ٱلرَّحْمَـٰنِ", "ٱلرَّحِيمِ"],
-      english: [
-        { id: "0", content: "the most compassionate" },
-        { id: "1", content: "the most merciful" },
-      ],
-    },
-    {
-      arabic: ["مَـٰلِكِ", "يَوْمِ", "ٱلدِّينِ"],
-      english: [
-        { id: "0", content: "Master" },
-        { id: "1", content: "of the Day" },
-        { id: "2", content: "of Judgement" },
-      ],
-    },
-    {
-      arabic: ["إِيَّاكَ", "نَعْبُدُ", "وَ", "إِيَّاكَ", "نَسْتَعِينُ"],
-      english: [
-        { id: "0", content: "You alone" },
-        { id: "1", content: "we worship" },
-        { id: "2", content: "and" },
-        { id: "3", content: "You alone" },
-        { id: "4", content: "we ask for help" },
-      ],
-    },
-    {
-      arabic: ["ٱهْدِنَا", "ٱلصِّرَٰطَ", "ٱلْمُسْتَقِيمَ"],
-      english: [
-        { id: "0", content: "Guide us" },
-        { id: "2", content: "(to) the straight" },
-        { id: "1", content: "path" },
-      ],
-    },
-    {
-      arabic: [
-        "صِرَٰطَ",
-        "ٱلَّذِينَ",
-        "أَنْعَمْتَ عَلَيْهِمْ",
-        "غَيْرِ",
-        "ٱلْمَغْضُوبِ عَلَيْهِمْ",
-        "وَ",
-        "لَا",
-        "ٱلضَّآلِّينَ",
-      ],
-      english: [
-        { id: "0", content: "(the) Path" },
-        { id: "1", content: "of the ones who" },
-        { id: "2", content: "you have blessed" },
-        { id: "3", content: "not (of)" },
-        { id: "4", content: "those you are disappointed with" },
-        { id: "5", content: "and" },
-        { id: "6", content: "not" },
-        { id: "7", content: "those who have gone astray" },
-      ],
-    },
-  ];
+  const [verses, setVerses] = useState<Verse[]>(surahNas.verses);
+  const [surahName, setSurahName] = useState("");
 
   const words = verses[currVerse]?.arabic;
 
@@ -688,17 +616,18 @@ const Apply = () => {
   const [answerRow, setAnswerRow] = useState(answers);
 
   const [winReady, setwinReady] = useState(false);
+
   useEffect(() => {
     setwinReady(true);
   }, []);
   useEffect(() => {
     const sentence = verses[currVerse]?.english;
     if (sentence) {
-      setQuestionRow(sentence.sort(() => Math.random() - 0.5));
+      setQuestionRow([...sentence].sort(() => Math.random() - 0.5));
       setAnswerRow([] as AWord[]);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currVerse]);
+  }, [currVerse,verses]);
 
   function handleDragEnd(result: DropResult) {
     if (!result.destination) return;
@@ -803,7 +732,7 @@ const Apply = () => {
   function goBackToOpts() {
     setAnswerCorr(false);
     setCurrVerse(0);
-    setChooseSurah(true);
+    setSurahMenu(true);
   }
 
   function Option({
@@ -829,18 +758,42 @@ const Apply = () => {
     );
   }
 
-  if (chooseSurah) {
+  const handleButtonClick = (surah: Surah) => {
+    setSurahMenu(false);
+    setSurahName(surah.name);
+    setVerses(surah.verses);
+  };
+
+  if (surahMenu) {
     return (
       <div className="flex w-full flex-col items-center gap-4">
         <p className="p-3 text-center font-manrope text-3xl font-extrabold">
           Translate passages from The Quran
         </p>
-        <div className="flex w-full flex-col items-center gap-1">
+        <div className="flex w-full flex-col items-center gap-4">
           <button
-            onClick={() => setChooseSurah(false)}
+            onClick={() => handleButtonClick(surahFatiha)}
             className="h-fit w-5/6 rounded-lg bg-white px-5 py-5 text-center font-manrope text-2xl font-semibold shadow-md ring ring-transparent hover:ring-rose-300 md:w-4/6 lg:w-3/6"
           >
-            Surah Al-Fatihah
+            {surahFatiha.name}
+          </button>
+          <button
+            onClick={() => handleButtonClick(surahNas)}
+            className="h-fit w-5/6 rounded-lg bg-white px-5 py-5 text-center font-manrope text-2xl font-semibold shadow-md ring ring-transparent hover:ring-rose-300 md:w-4/6 lg:w-3/6"
+          >
+            {surahNas.name}
+          </button>
+          <button
+            onClick={() => handleButtonClick(surahFalaq)}
+            className="h-fit w-5/6 rounded-lg bg-white px-5 py-5 text-center font-manrope text-2xl font-semibold shadow-md ring ring-transparent hover:ring-rose-300 md:w-4/6 lg:w-3/6"
+          >
+            {surahFalaq.name}
+          </button>
+          <button
+            onClick={() => handleButtonClick(surahIkhlas)}
+            className="h-fit w-5/6 rounded-lg bg-white px-5 py-5 text-center font-manrope text-2xl font-semibold shadow-md ring ring-transparent hover:ring-rose-300 md:w-4/6 lg:w-3/6"
+          >
+            {surahIkhlas.name}
           </button>
         </div>
       </div>
@@ -869,7 +822,7 @@ const Apply = () => {
     <div className="flex w-full flex-col items-center gap-8 ">
       <div className="flex h-fit w-5/6 flex-col gap-1 rounded-lg bg-white  px-5 pb-10 pt-5 shadow-md ring ring-transparent hover:ring-rose-300 md:w-5/6 lg:w-4/6">
         <p className="text-center font-manrope text-xl font-bold text-gray-600 md:pb-5 md:text-4xl">
-          Surah Al-Fatihah
+          {surahName}
         </p>
         <div className="flex flex-col flex-wrap items-center gap-8">
           <p className="mt-7 flex flex-row-reverse flex-wrap justify-center font-noton text-3xl leading-8 text-gray-600 sm:text-center md:text-6xl">
