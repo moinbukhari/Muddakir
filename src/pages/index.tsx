@@ -95,16 +95,39 @@ const WordFeed = () => {
   const [activeWord, setActiveWord] = useState<QuranicWord | null>(null);
   const [totalFreq, setTotalFreq] = useState(0);
   const totalQuranicWords = 77430;
+  const { data: userWords } = api.learn.userWords.useQuery(
+    { userId: userId ?? "" },
+    { enabled: !!userId }
+  );
+
   const { mutate } = api.learn.learn.useMutation({
+    async onMutate(learnedWord) {
+      await ctx.learn.userWords.cancel();
+
+      const prevData = ctx.learn.userWords.getData();
+      const word = data?.find(d => d.id ==learnedWord.wordLearntId);
+      ctx.learn.userWords.setData(
+        { userId: learnedWord.learntById },
+        (prevData) => prevData && word && [...prevData, word]
+      );
+
+      return { prevData };
+    },
+
     onSuccess: () => {
       if (activeWord) {
         toast.success(`Learnt "${activeWord?.translation}" in Arabic`);
       }
-      void ctx.learn.userWords.invalidate();
+      
     },
     onError: () => {
       toast.error(`Failed! Try Again Later`);
     },
+
+    onSettled: () => {
+      void ctx.learn.userWords.invalidate();
+    },
+    
   });
 
   const { mutate: unlearn } = api.learn.unlearn.useMutation({
@@ -118,16 +141,13 @@ const WordFeed = () => {
       toast.error(`Failed! Try Again Later`);
     },
   });
-  const { data: userWords } = api.learn.userWords.useQuery(
-    { userId: userId ?? "" },
-    { enabled: !!userId }
-  );
 
   useEffect(() => {
     if (userWords) {
       setTotalFreq(userWords.reduce((accum, cur) => accum + cur.frequency, 0));
     }
   }, [userWords]);
+
 
   if (!userLoaded) {
     return <div>Something went wrong 1</div>;
@@ -833,7 +853,7 @@ const Home: NextPage = () => {
 
   const handleLanding = () => {
     setLandingPage(false);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handleHomePage = () => {
@@ -976,12 +996,13 @@ const Home: NextPage = () => {
             </h1>
 
             <div className="flex flex-col flex-wrap items-center gap-8">
-              <div className="flex flex-col items-center gap-4 text-center font-semibold font-manrope">
-                <p className="text-xl leading-8 sm:text-2xl sm:leading-8 text-gray-600">
-                  Learn the most frequent words, improve retention with effective quizzes, and confidently translate Quranic passages
+              <div className="flex flex-col items-center gap-4 text-center font-manrope font-semibold">
+                <p className="text-xl leading-8 text-gray-600 sm:text-2xl sm:leading-8">
+                  Learn the most frequent words, improve retention with
+                  effective quizzes, and confidently translate Quranic passages
                 </p>
 
-                <p className="text-xl leading-8 sm:text-2xl sm:leading-8 text-gray-600 ">
+                <p className="text-xl leading-8 text-gray-600 sm:text-2xl sm:leading-8 ">
                   All to make those future recitations more meaningful
                 </p>
               </div>
