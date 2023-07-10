@@ -104,8 +104,10 @@ const WordFeed = () => {
     async onMutate(learnedWord) {
       await ctx.learn.userWords.cancel();
 
-      const prevData = ctx.learn.userWords.getData();
-      const word = data?.find(d => d.id ==learnedWord.wordLearntId);
+      const prevData = ctx.learn.userWords.getData({
+        userId: learnedWord.learntById,
+      });
+      const word = data?.find((d) => d.id == learnedWord.wordLearntId);
       ctx.learn.userWords.setData(
         { userId: learnedWord.learntById },
         (prevData) => prevData && word && [...prevData, word]
@@ -118,7 +120,6 @@ const WordFeed = () => {
       if (activeWord) {
         toast.success(`Learnt "${activeWord?.translation}" in Arabic`);
       }
-      
     },
     onError: () => {
       toast.error(`Failed! Try Again Later`);
@@ -127,18 +128,38 @@ const WordFeed = () => {
     onSettled: () => {
       void ctx.learn.userWords.invalidate();
     },
-    
   });
 
   const { mutate: unlearn } = api.learn.unlearn.useMutation({
+    async onMutate(unlearnWord) {
+      await ctx.learn.userWords.cancel();
+
+      const prevData = ctx.learn.userWords.getData({
+        userId: unlearnWord.learntById,
+      });
+      console.log(prevData);
+      const updatedData = prevData?.filter(
+        (w) => w.id !== unlearnWord.wordLearntId
+      );
+      if (updatedData) {
+        ctx.learn.userWords.setData({ userId: unlearnWord.learntById }, [
+          ...updatedData,
+        ]);
+      }
+
+      return { prevData };
+    },
+
     onSuccess: () => {
       if (activeWord) {
         toast(`Unlearnt "${activeWord?.arabic}"`);
       }
-      void ctx.learn.userWords.invalidate();
     },
     onError: () => {
       toast.error(`Failed! Try Again Later`);
+    },
+    onSettled: () => {
+      void ctx.learn.userWords.invalidate();
     },
   });
 
@@ -147,7 +168,6 @@ const WordFeed = () => {
       setTotalFreq(userWords.reduce((accum, cur) => accum + cur.frequency, 0));
     }
   }, [userWords]);
-
 
   if (!userLoaded) {
     return <div>Something went wrong 1</div>;
