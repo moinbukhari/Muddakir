@@ -6,16 +6,21 @@ export default function WordList({
     learntList,
     currWord,
     onWordSelect,
+    wordIndex,
   }: {
     list: QuranicWord[];
     learntList: QuranicWord[] | undefined;
     currWord: QuranicWord | null;
     onWordSelect: (word: QuranicWord) => void;
+    wordIndex: number; 
   }) {
+
     
+    const displayList = list.slice(0, wordIndex);
+
     return(
         <ul className="flex flex-wrap gap-6 justify-center items-center">
-            {list.map((word) => {
+            {displayList.map((word) => {
               return (
                 <WordCard
               key={word.id}
