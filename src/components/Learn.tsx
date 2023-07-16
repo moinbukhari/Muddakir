@@ -48,7 +48,7 @@ export default function Learn() {
   const { data, isLoading: wordsLoading } = api.learn.getAll.useQuery();
   const [activeWord, setActiveWord] = useState<QuranicWord | null>(null);
   const [totalFreq, setTotalFreq] = useState(0);
-  const [wordIndex, setWordIndex] = useState(5);
+  
   const [quiz, setQuiz] = useState(false);
   const totalQuranicWords = 77430;
   const { mutate } = api.learn.learn.useMutation({
@@ -118,6 +118,8 @@ export default function Learn() {
     { userId: userId ?? "" },
     { enabled: !!userId }
   );
+
+  const [wordIndex, setWordIndex] = useState(((userWords ? Math.floor(userWords.length/5) : 0) + 1) * 5);
 
   useEffect(() => {
     if (userWords) {
