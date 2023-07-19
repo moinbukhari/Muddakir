@@ -48,7 +48,7 @@ export default function Learn() {
   const { data, isLoading: wordsLoading } = api.learn.getAll.useQuery();
   const [activeWord, setActiveWord] = useState<QuranicWord | null>(null);
   const [totalFreq, setTotalFreq] = useState(0);
-  
+
   const [quiz, setQuiz] = useState(false);
   const totalQuranicWords = 77430;
   const { mutate } = api.learn.learn.useMutation({
@@ -119,11 +119,14 @@ export default function Learn() {
     { enabled: !!userId }
   );
 
-  const [wordIndex, setWordIndex] = useState(((userWords ? Math.floor(userWords.length/5) : 0) + 1) * 5);
+  const [wordIndex, setWordIndex] = useState(
+    ((userWords ? Math.floor(userWords.length / 5) : 0) + 1) * 5
+  );
 
   useEffect(() => {
     if (userWords) {
       setTotalFreq(userWords.reduce((accum, cur) => accum + cur.frequency, 0));
+      setWordIndex((Math.ceil(userWords.length / 5)) * 5);
     }
   }, [userWords]);
 
@@ -284,9 +287,13 @@ export default function Learn() {
       <Dialog open={quiz} onOpenChange={() => setQuiz(false)}>
         <DialogContent className="h-[600px]">
           <div className="flex flex-col gap-4">
-            <h1 className="text-center font-manrope text-3xl font-semibold">Progress Quiz</h1>
-            {isSignedIn && <Quiz />}
-            {!isSignedIn && <MockQuiz />}
+            <h1 className="w-full text-center font-manrope text-3xl font-semibold">
+              Progress Quiz
+            </h1>
+            <div className="h-full">
+              {isSignedIn && <Quiz />}
+              {!isSignedIn && <MockQuiz />}
+            </div>
           </div>
         </DialogContent>
       </Dialog>

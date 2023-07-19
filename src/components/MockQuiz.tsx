@@ -144,7 +144,7 @@ export default function MockQuiz() {
 
   if (currentIndex === 5) {
     return (
-      <div className="mt-14 flex flex-col items-center justify-center gap-5 text-center font-manrope">
+      <div className="flex flex-col h-full items-center justify-center gap-5 text-center font-manrope">
         <h1 className="text-4xl">Quiz Complete!</h1>
         <p className="text-2xl">
           Your score was {score} out of {5}
@@ -152,7 +152,7 @@ export default function MockQuiz() {
 
         <div className="flex flex-col items-center justify-center gap-2">
           <Link href={"/sign-in"}>
-            <span className="btn-custom2">
+            <span className="btn-custom3">
               Sign In to Get Personalised Quizzes
             </span>
           </Link>

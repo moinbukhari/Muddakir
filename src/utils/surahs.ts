@@ -1,5 +1,5 @@
-export const surahFatiha = {
-  name: "Surah Al-Fatiha",
+export const surahFatihah = {
+  name: "Surah Al-Fatihah",
   verses: [
     {
       arabic: ["بِسْمِ", "ٱللَّهِ", "ٱلرَّحْمَـٰنِ", "ٱلرَّحِيمِ"],

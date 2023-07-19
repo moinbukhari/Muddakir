@@ -30,8 +30,8 @@ export default function LandingPage({setLandingPage}:{setLandingPage: (landing: 
             </p>
           </div>
 
-          <button className="btn-custom2" onClick={handleLanding}>
-            Try Now
+          <button className="btn-custom3" onClick={handleLanding}>
+            <span className="text-lg font-semibold">Try Now</span>
           </button>
         </div>
         {/* </div> */}

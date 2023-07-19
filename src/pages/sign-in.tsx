@@ -19,7 +19,7 @@ export default function Page() {
           </div>
         </nav>
       </div>
-      <div className="flex flex-col justify-center items-center">
+      <div className="flex flex-col h-full items-center sm:mt-28">
         <SignIn path="/sign-in" routing="path" signUpUrl="/sign-up" redirectUrl="/"/>
       </div>
     </PageLayout>

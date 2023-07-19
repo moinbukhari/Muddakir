@@ -3,7 +3,12 @@ import { useState, useEffect } from "react";
 import vocabGif from "../../assets/vocab.gif";
 import quizGif from "../../assets/quiz.gif";
 import applyGif from "../../assets/apply.gif";
-import { Dialog, DialogContent, DialogHeader } from "../components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTrigger,
+} from "../components/ui/dialog";
 
 import {
   Tabs,
@@ -70,14 +75,89 @@ const Home: NextPage = () => {
               </span>
             </Link>
           </div>
-          <div>
+          <div className="flex gap-2 items-center justify-center">
+            <Dialog defaultOpen={false}>
+              <DialogTrigger className="pt-4">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={2}
+                  stroke="currentColor"
+                  className="h-8 w-8 text-slate-600 hover:text-slate-800"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z"
+                  />
+                </svg>
+              </DialogTrigger>
+              <DialogContent className=" h-[450px] sm:h-[530px] overflow-hidden pb-3">
+                <DialogHeader>
+                  <Tabs
+                    defaultValue="vocab"
+                    className="flex flex-col items-center justify-center gap-5"
+                  >
+                    <TabsList className="sm:text-xl">
+                      <TabsTrigger value="vocab">Vocab</TabsTrigger>
+                      <TabsTrigger value="quiz">Quiz</TabsTrigger>
+                      <TabsTrigger value="apply">Apply</TabsTrigger>
+                    </TabsList>
+                    <TabsContent value="vocab">
+                      <div className="flex flex-col items-center font-medium text-center text-base sm:text-xl">
+                        The Vocab section is the place for you to learn the most
+                        frequently occuring words in the Quran. The words are
+                        arranged in descending order of frequency. Mark the
+                        words you think you have learnt and you will be tested
+                        on those in the Quiz.
+                        <Image
+                          src={vocabGif}
+                          width={350}
+                          height={350}
+                          alt={"vocab demo"}
+                          className="mt-5"
+                        />
+                      </div>
+                    </TabsContent>
+                    <TabsContent value="quiz">
+                      <div className="flex flex-col items-center font-medium text-center text-base sm:text-xl">
+                        The Quiz section tests you on a portion of the words
+                        that you have marked as learnt.
+                        <Image
+                          src={quizGif}
+                          width={400}
+                          height={400}
+                          alt={"vocab demo"}
+                          className="mt-5"
+                        />
+                      </div>
+                    </TabsContent>
+                    <TabsContent value="apply">
+                      <div className="flex flex-col items-center font-medium text-center text-base sm:text-xl">
+                        The Apply section allows you to actively transalte
+                        passages of the Quran ayah by ayah. This will include
+                        words you have learnt as well as new words/phrases.
+                        <Image
+                          src={applyGif}
+                          width={400}
+                          height={400}
+                          alt={"vocab demo"}
+                          className="mt-5"
+                        />
+                      </div>
+                    </TabsContent>
+                  </Tabs>
+                </DialogHeader>
+              </DialogContent>
+            </Dialog>
             {!isSignedIn && (
               // <Link href="/sign-in" className="-m-1.5 flex p-1.5 text-center ">
               //   <span className="border-b-4 border-slate-400  hover:border-slate-600">
               //     Sign In
               //   </span>
               // </Link>
-              <span className="border-b-4 border-slate-400  hover:border-slate-600">
+              <span className="pt-3 border-b-4 border-slate-400  hover:border-slate-600">
                 <SignInButton />
               </span>
             )}
@@ -156,70 +236,6 @@ const Home: NextPage = () => {
               </label>
             </ul>
           </div>
-          <Dialog defaultOpen={true} >
-            <DialogContent className=" h-[450px] pb-3 overflow-hidden">
-              <DialogHeader>
-                <Tabs
-                  defaultValue="vocab"
-                  className="flex flex-col items-center justify-center gap-5"
-                >
-                  <TabsList>
-                    <TabsTrigger value="vocab">Vocab</TabsTrigger>
-                    <TabsTrigger value="quiz">Quiz</TabsTrigger>
-                    <TabsTrigger value="apply">Apply</TabsTrigger>
-                  </TabsList>
-                  <TabsContent value="vocab">
-                    <div className="flex flex-col items-center font-manrope">
-                      The Vocab section is the place for you to learn the most
-                      frequently occuring words in the Quran. The words are
-                      arranged in descending order of frequency. Mark the words
-                      you think you have learnt and you will be tested on those
-                      in the Quiz.
-                      <Image
-                        src={vocabGif}
-                        width={350}
-                        height={350}
-                        alt={"vocab demo"}
-                        className="mt-5"
-                      />
-                    </div>
-                  </TabsContent>
-                  <TabsContent value="quiz">
-                    <div className="flex flex-col items-center">
-                      The Quiz section tests you on a portion of the words that
-                      you have marked as learnt.
-                      <Image
-                        src={quizGif}
-                        width={400}
-                        height={400}
-                        alt={"vocab demo"}
-                        className="mt-5"
-                      />
-                    </div>
-                  </TabsContent>
-                  <TabsContent value="apply">
-                    <div className="flex flex-col items-center">
-                      The Apply section allows you to actively transalte
-                      passages of the Quran ayah by ayah. This will include
-                      words you have learnt as well as new words/phrases.
-                      <Image
-                        src={applyGif}
-                        width={400}
-                        height={400}
-                        alt={"vocab demo"}
-                        className="mt-5"
-                      />
-                    </div>
-                  </TabsContent>
-                </Tabs>
-                {/* <DialogTitle>Are you sure absolutely sure?</DialogTitle>
-                <DialogDescription>
-                  This action cannot be undone. This will permanently delete
-                  your account and remove your data from our servers.
-                </DialogDescription> */}
-              </DialogHeader>
-            </DialogContent>
-          </Dialog>
 
           {opts === "vocab" && <Learn />}
 

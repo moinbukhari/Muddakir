@@ -114,7 +114,7 @@ export default function Quiz(){
 
     if (currentIndex === 5) {
       return (
-        <div className="mt-14 flex flex-col items-center justify-center gap-5 text-center font-manrope">
+        <div className="flex flex-col h-full items-center justify-center gap-5 text-center font-manrope">
           <h1 className="text-4xl">Quiz Complete!</h1>
           <p className="text-2xl">
             Your score was {score} out of {5}

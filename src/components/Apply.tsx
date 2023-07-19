@@ -12,7 +12,7 @@ import { toast } from "react-hot-toast";
 import {
   type Surah,
   type Verse,
-  surahFatiha,
+  surahFatihah,
   surahNas,
   surahFalaq,
   surahIkhlas,
@@ -207,10 +207,10 @@ export default function Apply() {
         </p>
         <div className="flex w-full flex-col items-center gap-4">
           <button
-            onClick={() => handleButtonClick(surahFatiha)}
+            onClick={() => handleButtonClick(surahFatihah)}
             className="h-fit w-5/6 rounded-lg bg-white px-5 py-5 text-center font-manrope text-2xl font-semibold shadow-md ring ring-transparent hover:ring-rose-300 md:w-4/6 lg:w-3/6"
           >
-            {surahFatiha.name}
+            {surahFatihah.name}
           </button>
           <button
             onClick={() => handleButtonClick(surahNas)}
@@ -236,17 +236,16 @@ export default function Apply() {
   }
   if (currVerse === verses.length) {
     return (
-      <div className="flex w-5/6 flex-col items-center gap-3 rounded-lg bg-white px-5 pb-10 pt-5 text-center shadow-md ring ring-transparent hover:ring-rose-300 lg:w-4/6">
+      <div className="flex w-5/6 flex-col items-center gap-3 rounded-lg bg-white px-10 pb-10 pt-5 text-center shadow-md ring ring-transparent hover:ring-rose-300 lg:w-4/6 ">
         <p className="text-2xl">
           {" "}
-          Congratulations you can now understand the meaning of Surah
-          Al-Fatihah.
+          Congratulations you can now understand the meaning of {surahName}.
         </p>
-        <p className="text-2xl">
+        {surahName===surahFatihah.name && (<p className="text-2xl">
           {" "}
           This Surah is recited a minimum of 17 times each day, just in the
           obligatory prayers.
-        </p>
+        </p>)}
         <button className="btn-custom mt-5" onClick={() => goBackToOpts()}>
           Done
         </button>
