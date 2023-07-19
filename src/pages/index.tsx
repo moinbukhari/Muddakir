@@ -42,6 +42,7 @@ const Home: NextPage = () => {
     setOpts(e.target.value);
   };
 
+
   const handleHomePage = () => {
     setLandingPage(true);
   };
@@ -245,8 +246,8 @@ const Home: NextPage = () => {
           {opts === "apply" && <Apply />}
         </div>
       )}
-
       {landingPage && <LandingPage setLandingPage={setLandingPage} />}
+
     </PageLayout>
   );
 };
