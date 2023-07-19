@@ -128,6 +128,7 @@ export default function Learn() {
       setTotalFreq(userWords.reduce((accum, cur) => accum + cur.frequency, 0));
       setWordIndex((Math.ceil(userWords.length / 5)) * 5);
     }
+
   }, [userWords]);
 
   function handleNewWords() {
