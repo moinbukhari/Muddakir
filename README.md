@@ -1,13 +1,9 @@
-# Create T3 App
+# Muddakir
 
-This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
+An app designed to help non-arabic speakers understand the Quran
 
-## What do I need to do?
+## Built Using:
 
-[x] fix width and position of words and their meanings.
-[x] add a simple background.
-[x] add a navbar at top with name of app on left and vocab and quiz options on the right.
-[] switch between vocab and quiz
-[] implement quiz
-[] fix display of sidebar with mobile
-
+- NextJS, TypeScript, TailwindCSS, tRPC
+- ClerkAuth
+- Prisma, PlanetScale
