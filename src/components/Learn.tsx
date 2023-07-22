@@ -27,8 +27,6 @@ import { toast } from "react-hot-toast";
 import quranIcon from "../../public/quran.png";
 import Image from "next/image";
 import Quiz from "./Quiz";
-import MockQuiz from "./MockQuiz";
-
 const btn =
   "inline-flex items-center px-3 py-1.5 border border-gray-300 shadow-sm font-medium rounded-full text-gray-700 bg-white hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500";
 
@@ -45,7 +43,8 @@ export default function Learn() {
   const { isLoaded: userLoaded, isSignedIn, user } = useUser();
   const userId = user?.id;
   const ctx = api.useContext();
-  const { data, isLoading: wordsLoading } = api.learn.getAll.useQuery();
+  const { data: allWords, isLoading: wordsLoading } =
+    api.learn.getAll.useQuery();
   const [activeWord, setActiveWord] = useState<QuranicWord | null>(null);
   const [totalFreq, setTotalFreq] = useState(0);
 
@@ -58,7 +57,7 @@ export default function Learn() {
       const prevData = ctx.learn.userWords.getData({
         userId: learnedWord.learntById,
       });
-      const word = data?.find((d) => d.id == learnedWord.wordLearntId);
+      const word = allWords?.find((d) => d.id == learnedWord.wordLearntId);
       ctx.learn.userWords.setData(
         { userId: learnedWord.learntById },
         (prevData) => prevData && word && [...prevData, word]
@@ -126,9 +125,8 @@ export default function Learn() {
   useEffect(() => {
     if (userWords) {
       setTotalFreq(userWords.reduce((accum, cur) => accum + cur.frequency, 0));
-      setWordIndex((Math.ceil(userWords.length / 5)) * 5);
+      setWordIndex(Math.ceil(userWords.length / 5) * 5);
     }
-
   }, [userWords]);
 
   function handleNewWords() {
@@ -141,7 +139,7 @@ export default function Learn() {
           color: "#fff",
         },
       });
-    } else {
+    } else if (allWords && wordIndex < allWords?.length) {
       setQuiz(true);
       setWordIndex((i) => i + 5);
     }
@@ -158,7 +156,7 @@ export default function Learn() {
       </div>
     );
 
-  if (!data) return <div>Something went wrong</div>;
+  if (!allWords) return <div>Something went wrong</div>;
 
   return (
     <div className="mx-10 flex w-full flex-col items-center justify-center gap-10">
@@ -208,7 +206,7 @@ export default function Learn() {
         }
       >
         <WordList
-          list={data}
+          list={allWords}
           learntList={userWords}
           currWord={activeWord}
           onWordSelect={setActiveWord}
@@ -223,9 +221,17 @@ export default function Learn() {
             : "mx-8 flex w-full max-w-screen-md justify-center 2xl:max-w-screen-lg"
         }
       >
-        <button className={btn} onClick={handleNewWords}>
-          Unlock More Words
-        </button>
+        {wordIndex < allWords.length && (
+          <button className={btn} onClick={handleNewWords}>
+            Unlock More Words
+          </button>
+        )}
+
+        {wordIndex >= allWords.length && (
+          <button className={btn}>
+            That{"'"}s All The Words For Now
+          </button>
+        )}
       </div>
 
       <AnimatePresence mode="popLayout">
@@ -291,9 +297,11 @@ export default function Learn() {
             <h1 className="w-full text-center font-manrope text-3xl font-semibold">
               Progress Quiz
             </h1>
-            <div className="h-full">
-              {isSignedIn && <Quiz />}
-              {!isSignedIn && <MockQuiz />}
+            <div className="h-full font-noton">
+              {isSignedIn && userWords && <Quiz userWords={userWords} />}
+              {!isSignedIn && (
+                <Quiz userWords={allWords.slice(0, wordIndex - 5)} />
+              )}
             </div>
           </div>
         </DialogContent>

@@ -47,7 +47,7 @@ function shuffleWords(a: Word[]): Word[] {
   return array;
 }
 
-export default function Quiz(){
+export default function Quiz({userWords}: {userWords: Word[]}){
   const [currentIndex, setCurrentIndex] = useState(0);
   const [score, setScore] = useState(0);
   const [currentWord, setCurrentWord] = useState<Word>();
@@ -55,10 +55,10 @@ export default function Quiz(){
   const [currentOptions, setCurrentOptions] = useState<string[]>([]);
   const [randomWords, setRandomWords] = useState<Word[]>([]);
 
-  const { user } = useUser();
-  const userId = user?.id;
-  const { data: userWords, isLoading: wordsLoading } =
-    api.learn.userWords.useQuery({ userId: userId ?? "" });
+  // const { user } = useUser();
+  // const userId = user?.id;
+  // const { data: userWords, isLoading: wordsLoading } =
+  //   api.learn.userWords.useQuery({ userId: userId ?? "" });
 
   const handleNext = () => {
     if (selectedAnswer === currentWord?.translation) {
@@ -96,12 +96,12 @@ export default function Quiz(){
     }
   }, [currentIndex, randomWords]);
 
-  if (wordsLoading)
-    return (
-      <div className="flex grow">
-        <LoadingPage />
-      </div>
-    );
+  // if (wordsLoading)
+  //   return (
+  //     <div className="flex grow">
+  //       <LoadingPage />
+  //     </div>
+  //   );
 
   if (userWords) {
     if (userWords.length < 5) {

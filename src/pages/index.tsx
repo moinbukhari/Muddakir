@@ -26,7 +26,6 @@ import { PageLayout } from "~/components/layout";
 import Image from "next/image";
 import Learn from "~/components/Learn";
 import Quiz from "~/components/Quiz";
-import MockQuiz from "~/components/MockQuiz";
 import LandingPage from "~/components/LandingPage";
 import Apply from "~/components/Apply";
 
@@ -34,8 +33,12 @@ const Home: NextPage = () => {
   const [opts, setOpts] = useState("vocab");
   const { isLoaded: userLoaded, isSignedIn, user } = useUser();
   const [landingPage, setLandingPage] = useState(true);
-
-  api.learn.getAll.useQuery();
+  const userId = user?.id;
+  const { data: allWords} = api.learn.getAll.useQuery();
+  const { data: userWords } = api.learn.userWords.useQuery(
+    { userId: userId ?? "" },
+    { enabled: !!userId }
+  );
   api.learn.userWords.useQuery({ userId: user?.id ?? "" });
 
   const handleOpts = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -240,8 +243,8 @@ const Home: NextPage = () => {
 
           {opts === "vocab" && <Learn />}
 
-          {opts === "quiz" && isSignedIn && <Quiz />}
-          {opts === "quiz" && !isSignedIn && <MockQuiz />}
+          {opts === "quiz" && isSignedIn && userWords && <Quiz userWords={userWords} />}
+          {opts === "quiz" && !isSignedIn && allWords && <Quiz userWords={allWords}/>}
 
           {opts === "apply" && <Apply />}
         </div>
