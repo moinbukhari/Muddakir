@@ -1,8 +1,5 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-
-import { useUser } from "@clerk/nextjs";
-import { api } from "~/utils/api";
 import { LoadingPage } from "~/components/loading";
 
 import type { Word } from "@prisma/client";
@@ -50,15 +47,10 @@ function shuffleWords(a: Word[]): Word[] {
 export default function Quiz({userWords}: {userWords: Word[]}){
   const [currentIndex, setCurrentIndex] = useState(0);
   const [score, setScore] = useState(0);
-  const [currentWord, setCurrentWord] = useState<Word>();
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [currentOptions, setCurrentOptions] = useState<string[]>([]);
-  const [randomWords, setRandomWords] = useState<Word[]>([]);
-
-  // const { user } = useUser();
-  // const userId = user?.id;
-  // const { data: userWords, isLoading: wordsLoading } =
-  //   api.learn.userWords.useQuery({ userId: userId ?? "" });
+  const [randomWords] = useState<Word[]>(getRandomWordList(userWords));
+  const currentWord = randomWords[currentIndex];
 
   const handleNext = () => {
     if (selectedAnswer === currentWord?.translation) {
@@ -73,35 +65,13 @@ export default function Quiz({userWords}: {userWords: Word[]}){
   };
 
   useEffect(() => {
-    if (currentWord && userWords) {
+    if (currentWord) {
       const wrongAnswers = getRandomIncorrectAnswers(userWords, currentWord);
       const opts = shuffle([...wrongAnswers, currentWord.translation]);
       setCurrentOptions(opts);
     }
   }, [currentWord, userWords]);
 
-  useEffect(() => {
-    if (userWords && currentIndex === 0) {
-      const randUserWords = getRandomWordList(userWords);
-      setRandomWords(randUserWords);
-      //console.log(randomWords);
-      //setCurrentWord(randUserWords[0]);
-    }
-  }, [currentIndex, userWords]);
-
-  useEffect(() => {
-    if (randomWords.length > 0 && currentIndex < randomWords.length) {
-      setCurrentWord(randomWords[currentIndex]);
-      //setCurrentWord(randUserWords[0]);
-    }
-  }, [currentIndex, randomWords]);
-
-  // if (wordsLoading)
-  //   return (
-  //     <div className="flex grow">
-  //       <LoadingPage />
-  //     </div>
-  //   );
 
   if (userWords) {
     if (userWords.length < 5) {
@@ -166,7 +136,11 @@ export default function Quiz({userWords}: {userWords: Word[]}){
           {currentOptions.map((option) => (
             <li
               key={option}
-              onClick={() => handleAnswer(option)}
+              onClick={() => {
+                if(!selectedAnswer){
+                  handleAnswer(option);
+                }
+              }}
               className={
                 !!selectedAnswer
                   ? option === currentWord?.translation

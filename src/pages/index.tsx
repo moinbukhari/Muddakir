@@ -8,7 +8,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTrigger,
-} from "../components/ui/dialog";
+} from "../components/dialog";
 
 import {
   Tabs,

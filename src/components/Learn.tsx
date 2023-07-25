@@ -13,7 +13,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "~/components/ui/dialog";
+} from "~/components/dialog";
 
 import type { QuranicWord } from "../components/WordCard";
 import WordList from "../components/WordList";
@@ -27,6 +27,8 @@ import { toast } from "react-hot-toast";
 import quranIcon from "../../public/quran.png";
 import Image from "next/image";
 import Quiz from "./Quiz";
+import MyModal from "./MyModal";
+
 const btn =
   "inline-flex items-center px-3 py-1.5 border border-gray-300 shadow-sm font-medium rounded-full text-gray-700 bg-white hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500";
 
@@ -228,11 +230,18 @@ export default function Learn() {
         )}
 
         {wordIndex >= allWords.length && (
-          <button className={btn}>
-            That{"'"}s All The Words For Now
-          </button>
+          <button className={btn}>That{"'"}s All The Words For Now</button>
         )}
       </div>
+
+      <MyModal open={quiz} onOpenChange={setQuiz}>
+        <h1 className="mb-4 w-full text-center font-manrope text-3xl font-semibold">
+          Progress Quiz
+        </h1>
+        <div className="h-full">
+          <Quiz userWords={allWords.slice(0, wordIndex - 5)} />
+        </div>
+      </MyModal>
 
       <AnimatePresence mode="popLayout">
         {activeWord && (
@@ -291,7 +300,7 @@ export default function Learn() {
         )}
       </AnimatePresence>
 
-      <Dialog open={quiz} onOpenChange={() => setQuiz(false)}>
+      {/* <Dialog open={quiz} onOpenChange={setQuiz}>
         <DialogContent className="h-[600px]">
           <div className="flex flex-col gap-4">
             <h1 className="w-full text-center font-manrope text-3xl font-semibold">
@@ -305,7 +314,7 @@ export default function Learn() {
             </div>
           </div>
         </DialogContent>
-      </Dialog>
+      </Dialog> */}
     </div>
   );
 }

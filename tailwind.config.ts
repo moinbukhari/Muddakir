@@ -28,6 +28,9 @@ export default {
         noton: ['var(--font-noto-n)'],
         manrope: ['var(--font-manrope)'],
       },
+      screens: {
+        'xs': '400px', // min-width
+      },
     },
     
   },
