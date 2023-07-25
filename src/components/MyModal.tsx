@@ -1,65 +1,31 @@
-import { useEffect, useState, useRef, type DialogHTMLAttributes } from "react";
+import { useEffect, useRef, type DialogHTMLAttributes } from "react";
 import IconOnly from "./icon";
-import { type VariantProps, cva } from "class-variance-authority";
 import { cn } from "~/utils";
 
-const dialogVariants = cva(
-  "fixed inset-0 flex items-center justify-center bg-slate-950/50 px-5",
-  {
-    variants: {
-      variant: {
-        default: "",
-        outline: "",
-      },
-      size: {
-        default: "",
-        sm: "",
-      },
-    },
-    defaultVariants: {
-      variant: "default",
-      size: "default",
-    },
-  }
-);
-
 interface DialogProps
-  extends DialogHTMLAttributes<HTMLDialogElement>,
-    VariantProps<typeof dialogVariants> {
-  open?: boolean;
-  onOpenChange?(open: boolean): void;
+  extends DialogHTMLAttributes<HTMLDialogElement>{
+  open: boolean;
+  onOpenChange(open: boolean): void;
 }
 
 const MyModal: React.FC<DialogProps> = ({
   className,
-  size,
-  variant,
   open,
   onOpenChange,
   ...props
 }) => {
-  const [isOpen, setIsOpen] = useState(open);
   const modalRef = useRef<HTMLDialogElement | null>(null);
 
-  const handleOpenModal = () => {
-    setIsOpen((prevState) => !prevState);
-  };
-
   const handleCloseModal = () => {
-    setIsOpen(false);
-    if(onOpenChange){
-        onOpenChange(false);
-    }
+    onOpenChange(false);
+
   };
 
   useEffect(() => {
     const handleEvent = (e: MouseEvent) => {
       console.log(e.target);
       if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
-        setIsOpen(false);
-        if(onOpenChange){
-            onOpenChange(false);
-        }
+        onOpenChange(false);
       }
     };
 
@@ -70,20 +36,10 @@ const MyModal: React.FC<DialogProps> = ({
     };
   });
 
-  useEffect(() => {
-    setIsOpen(open);
-  },[open]);
-
   return (
     <>
-      {/* <button
-        className="underline underline-offset-1"
-        onClick={handleOpenModal}
-      >
-        Open Modal
-      </button> */}
-      {isOpen && (
-        <div className={cn(dialogVariants({ variant, size, className }))}>
+      {open && (
+        <div className={cn( "fixed inset-0 flex items-center justify-center bg-slate-950/50 px-5" , className )}>
           <dialog
             className="relative m-auto flex h-[600px] w-full max-w-lg flex-col items-center justify-center  rounded-lg bg-slate-100"
             ref={modalRef}
