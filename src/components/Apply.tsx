@@ -16,8 +16,9 @@ import {
   surahNas,
   surahFalaq,
   surahIkhlas,
+  surahMasad,
+  surahNasr
 } from "~/utils/surahs";
-
 
 type AWord = {
   id: string;
@@ -34,6 +35,13 @@ function shuffleList(a: AWord[]): AWord[] {
   return array;
 }
 
+function colourCurrentWord(arabicIndex:string, englishIndex:string ): boolean{
+  if(arabicIndex===englishIndex){
+    return true;
+  }
+  return false;
+}
+
 export default function Apply() {
   const [answeredCorr, setAnswerCorr] = useState(false);
   const [surahMenu, setSurahMenu] = useState(true);
@@ -43,9 +51,10 @@ export default function Apply() {
 
   const words = verses[currVerse]?.arabic;
 
-  const items = verses[currVerse]?.english;
+  const eng_words = verses[currVerse]?.english;
+  const arabic_order = verses[currVerse]?.arabic_order ?? [];
 
-  const questions = shuffleList(items ?? []);
+  const questions = shuffleList(eng_words ?? []);
   const answers = [] as AWord[];
   const [questionRow, setQuestionRow] = useState(questions);
   const [answerRow, setAnswerRow] = useState(answers);
@@ -148,8 +157,6 @@ export default function Apply() {
       }, "")
       .trim();
 
-    console.log("sentence is ", answer);
-    console.log("res ", res);
 
     if (res === answer) {
       toast.success(`Correct🎉`);
@@ -199,6 +206,7 @@ export default function Apply() {
     setVerses(surah.verses);
   };
 
+
   if (surahMenu) {
     return (
       <div className="flex w-full flex-col items-center gap-4">
@@ -230,6 +238,18 @@ export default function Apply() {
           >
             {surahIkhlas.name}
           </button>
+          <button
+            onClick={() => handleButtonClick(surahMasad)}
+            className="h-fit w-5/6 rounded-lg bg-white px-5 py-5 text-center font-manrope text-2xl font-semibold shadow-md ring ring-transparent hover:ring-rose-300 md:w-4/6 lg:w-3/6"
+          >
+            {surahMasad.name}
+          </button>
+          <button
+            onClick={() => handleButtonClick(surahNasr)}
+            className="h-fit w-5/6 rounded-lg bg-white px-5 py-5 text-center font-manrope text-2xl font-semibold shadow-md ring ring-transparent hover:ring-rose-300 md:w-4/6 lg:w-3/6"
+          >
+            {surahNasr.name}
+          </button>
         </div>
       </div>
     );
@@ -239,19 +259,22 @@ export default function Apply() {
       <div className="flex w-5/6 flex-col items-center gap-3 rounded-lg bg-white px-10 pb-10 pt-5 text-center shadow-md ring ring-transparent hover:ring-rose-300 lg:w-4/6 ">
         <p className="text-2xl">
           {" "}
-          Congratulations you can now understand the meaning of {surahName}.
+          Congratulations you can now translate {surahName}!
         </p>
-        {surahName===surahFatihah.name && (<p className="text-2xl">
-          {" "}
-          This Surah is recited a minimum of 17 times each day, just in the
-          obligatory prayers.
-        </p>)}
+        {surahName === surahFatihah.name && (
+          <p className="text-2xl">
+            {" "}
+            This Surah is recited a minimum of 17 times each day, just in the
+            obligatory prayers.
+          </p>
+        )}
         <button className="btn-custom mt-5" onClick={() => goBackToOpts()}>
           Done
         </button>
       </div>
     );
   }
+
   return (
     <div className="flex w-full flex-col items-center gap-8 ">
       <div className="flex h-fit w-5/6 flex-col gap-1 rounded-lg bg-white  px-5 pb-10 pt-5 shadow-md ring ring-transparent hover:ring-rose-300 md:w-5/6 lg:w-4/6">
@@ -260,18 +283,15 @@ export default function Apply() {
         </p>
         <div className="flex flex-col flex-wrap items-center gap-8">
           <p className="mt-7 flex flex-row-reverse flex-wrap justify-center font-noton text-3xl leading-8 text-gray-600 sm:text-center md:text-6xl">
-            {items &&
+            {eng_words &&
               words?.map((word, index) => {
-                const itemId = items[index]?.id ?? -1;
-                const answerLength = answerRow.length.toString() ?? "-1";
-                console.log(answerLength);
+                const itemId = eng_words[answerRow.length]?.id ?? "-1";
+                const wordPostion = arabic_order[index] ?? -1;
                 let className = "text-gray-300";
-                if (
-                  (answerLength === "-1" && index === 0) ||
-                  itemId === answerLength
-                ) {
+                if (colourCurrentWord(index.toString(), itemId)) {
                   className = "text-rose-400";
-                } else if (itemId < answerLength) {
+                } else if (wordPostion < answerRow.length || eng_words.length === answerRow.length) {
+            
                   className = "text-gray-600";
                 }
 

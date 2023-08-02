@@ -23,7 +23,6 @@ const MyModal: React.FC<DialogProps> = ({
 
   useEffect(() => {
     const handleEvent = (e: MouseEvent) => {
-      console.log(e.target);
       if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
         onOpenChange(false);
       }
