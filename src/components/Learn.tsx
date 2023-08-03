@@ -120,19 +120,26 @@ export default function Learn() {
     { enabled: !!userId }
   );
 
-  const [wordIndex, setWordIndex] = useState(
-    ((userWords ? Math.floor(userWords.length / 5) : 0) + 1) * 5
-  );
+  const [wordIndex, setWordIndex] = useState(5);
 
   useEffect(() => {
     if (userWords) {
       setTotalFreq(userWords.reduce((accum, cur) => accum + cur.frequency, 0));
-      setWordIndex(Math.ceil(userWords.length / 5) * 5);
+      if(userWords.length===0){
+        setWordIndex(5);
+      }
+      else{
+        setWordIndex(Math.ceil(userWords.length / 5) * 5);
+      }
+      
     }
   }, [userWords]);
 
   function handleNewWords() {
-    if (userWords?.length && userWords?.length < wordIndex) {
+    console.log("userWords.length:", userWords?.length);
+    console.log("WordIndex:", wordIndex);
+    if (userWords && (userWords?.length < wordIndex)) {
+      console.log("HELOOO");
       toast(`You need to learn all ${wordIndex} words first.`, {
         icon: "🤨",
         style: {
@@ -299,22 +306,6 @@ export default function Learn() {
           </div>
         )}
       </AnimatePresence>
-
-      {/* <Dialog open={quiz} onOpenChange={setQuiz}>
-        <DialogContent className="h-[600px]">
-          <div className="flex flex-col gap-4">
-            <h1 className="w-full text-center font-manrope text-3xl font-semibold">
-              Progress Quiz
-            </h1>
-            <div className="h-full font-noton">
-              {isSignedIn && userWords && <Quiz userWords={userWords} />}
-              {!isSignedIn && (
-                <Quiz userWords={allWords.slice(0, wordIndex - 5)} />
-              )}
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog> */}
     </div>
   );
 }
