@@ -6,7 +6,7 @@ An app designed to help non-arabic speakers understand the Quran
 
 Muddakir was designed to help a huge population of non-Arabic speakers that can read the Quran in Arabic but are not able to understand its meaning. 
 
-I started developing it in April 2023 during Season 2 of Buildspace's N&W program. The project was initialised using the [T3 Stack](https://create.t3.gg/). The mock designs for the project are done on [excalidraw](https://excalidraw.com/) and then implemented using NextJS and TypeScript.
+I started developing it in April 2023 during Season 2 of Buildspace's N&W program. The project was initialised using the [T3 Stack](https://create.t3.gg/). The mock designs for the project are done on [excalidraw](https://excalidraw.com/) and then implemented using NextJS and TypeScript. The project is deployed on [Vercel](https://vercel.com/).
 
 I am actively developing this project and my favourite part so far has been the Apply mode where you are tasked with translating a passage of the Quran word by word. I implemented a drag-and-drop feature alongside highlights on the Arabic text, depending on whether the user has already translated, is translating, or has not translated the word. I believe this greatly improves the experience of the user.
 
