@@ -5,7 +5,7 @@ export const Footer = () => {
         <p className="text-center text-sm leading-loose md:text-left md:text-base">
           Built by{" "}
           <a
-            href="https://twitter.com/Moin4321"
+            href="https://twitter.com/moinbukh"
             target="_blank"
             rel="noreferrer"
             className="font-medium text-slate-700 underline underline-offset-4 hover:text-slate-950"
